@@ -9,7 +9,6 @@
 #include "databaseresetcommand.h"
 #include "databaserollbackcommand.h"
 
-#include "dbmigrations/m0001_createuserstable.h"
 #include "dbmigrations/m0002_createfeedstable.h"
 
 #include <Firfuorida/Migrator>
@@ -66,7 +65,6 @@ QString DatabaseCommand::dbConName() const
 void DatabaseCommand::initMigrations()
 {
     m_migrator = std::make_unique<Firfuorida::Migrator>(dbConName(), u"migrations"_s);
-    new M0001_CreateUsersTable(m_migrator.get());
     new M0002_CreateFeedsTable(m_migrator.get());
 }
 

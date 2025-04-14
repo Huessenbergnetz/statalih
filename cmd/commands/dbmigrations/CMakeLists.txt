@@ -3,8 +3,6 @@
 
 target_sources(statalihcmd
     PRIVATE
-        m0001_createuserstable.cpp
-        m0001_createuserstable.h
         m0002_createfeedstable.cpp
         m0002_createfeedstable.h
 )
