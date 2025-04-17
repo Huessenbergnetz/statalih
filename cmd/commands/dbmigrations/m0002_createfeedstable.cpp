@@ -19,15 +19,16 @@ void M0002_CreateFeedsTable::up()
         raw(uR"-(
             CREATE TABLE feeds (
                 id SERIAL PRIMARY KEY,
-                type SMALLINT NOT NULL,
                 slug VARCHAR(255) NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
+                source VARCHAR(2048),
                 link VARCHAR(2048),
                 "lastBuildDate" TIMESTAMP,
-                "lastEtag" VARCHAR(255),
+                "lastFetch" TIMESTAMP,
                 coords POINT,
-                data JSONB
+                data JSONB,
+                CONSTRAINT slug_unique UNIQUE(slug)
             )
         )-"_s);
     } else {

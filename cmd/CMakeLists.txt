@@ -14,6 +14,13 @@ target_sources(statalihcmd
         database.h
         controller.cpp
         controller.h
+        feed.cpp
+        feed_p.h
+        feed.h
+        feedparser.cpp
+        feedparser.h
+        utils.cpp
+        utils.h
 )
 
 add_subdirectory(commands)
@@ -22,6 +29,8 @@ target_link_libraries(statalihcmd
     PRIVATE
         Qt6::Core
         Qt6::Sql
+        Qt6::Network
+        Qt6::Xml
         FirfuoridaQt6::Core
 )
 

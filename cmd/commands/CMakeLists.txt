@@ -15,6 +15,10 @@ target_sources(statalihcmd
         databaseresetcommand.h
         databaserollbackcommand.cpp
         databaserollbackcommand.h
+        feedscommand.cpp
+        feedscommand.h
+        feedsaddcommand.cpp
+        feedsaddcommand.h
 )
 
 add_subdirectory(dbmigrations)

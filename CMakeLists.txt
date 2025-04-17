@@ -16,7 +16,7 @@ endif()
 
 set(CUTELYST_VERSION_MAJOR 5)
 
-find_package(Qt6 6.5.0 COMPONENTS Core Network Sql LinguistTools REQUIRED)
+find_package(Qt6 6.5.0 COMPONENTS Core Network Sql Xml LinguistTools REQUIRED)
 find_package(Cutelyst${CUTELYST_VERSION_MAJOR}Qt6 REQUIRED)
 find_package(Cutelee6Qt6 REQUIRED)
 find_package(Cutelyst${CUTELYST_VERSION_MAJOR}Qt6Botan REQUIRED)

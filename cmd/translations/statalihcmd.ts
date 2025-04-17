@@ -164,11 +164,6 @@
         <extracomment>CLI option description, %1 will be the default path</extracomment>
         <translation type="unfinished"></translation>
     </message>
-    <message id="statalihcmd-opt-global-inifile-val">
-        <source>ini file</source>
-        <extracomment>CLI option value name</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
     <message id="statalihcmd-opt-global-quiet-desc">
         <source>Be quiet and print less output.</source>
         <extracomment>CLI option description</extracomment>
@@ -178,6 +173,143 @@
         <source>Zumftmeistar is a web management application for clubs and associations based on Cutelyst.
 This command line client helps to manage several aspects of Zumftmeistar.</source>
         <extracomment>General description for zmc</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-summary">
+        <source>Manage web feeds</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-description">
+        <source>Add, list, remove, update and fetch web feeds.</source>
+        <oldsource>Add, list, remove, update and change web feeds.</oldsource>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-url-desc">
+        <source>URL of the web feed to add.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-value">
+        <source>URL</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-coords-desc">
+        <source>Coordinates of the location covered in the feed. Enter them like &quot;%1;%2&quot;.</source>
+        <oldsource>Coordinates of the location covered in the feed.Enter them like -c &quot;%1;%2&quot;.</oldsource>
+        <extracomment>CLI option description, %1 will be replaced by the example latitude, %2 by the example longitude</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-coords-value">
+        <source>latitude;longitude</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-missing-url">
+        <source>Please use the -u parameter to specify the URL of the web feed.</source>
+        <extracomment>Error message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-invalid-url">
+        <source>The web feed url is not valid.</source>
+        <extracomment>Error message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-invalid-url-scheme">
+        <source>Not supported URL scheme. Only the following schemes are supported: %1</source>
+        <extracomment>Error message, %1 will be replaced by a list of supported schemes</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-add-summary">
+        <source>Add a new web feed</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-add-description">
+        <source>Adds a new web feed to the database. Will download the feed, parse it and the information and items to the system.</source>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-parsing-input">
+        <source>Parsing input values</source>
+        <extracomment>Status message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-invalid-coords">
+        <source>Invalid coordinates</source>
+        <extracomment>Error message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-status-feed-add-fetch">
+        <source>Fetching feed</source>
+        <extracomment>Status message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-err-feeds-add-parsing">
+        <source>Failed to parse feed XML data at line %1 and column %2: %3</source>
+        <extracomment>Error message, %1 and %2 will be replaced by line and column, %3 by the error message of the parser</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-status-feed-add-parse-xml">
+        <source>Parsing XML</source>
+        <extracomment>Satus message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-feeds-add-db-add">
+        <source>Adding new web feed</source>
+        <oldsource>Adding new web feed “%1“</oldsource>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-already-added">
+        <source>This web feed has already been added to the database with ID %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-title-desc">
+        <source>Overrides the web feed title extracted from the feed data.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-slug-desc">
+        <source>Overrides the slug generated from the title extracted form the feed data.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-description-desc">
+        <source>Overrides the web feed description extracted from the feed data.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-value-text">
+        <source>text</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-value-filepath">
+        <source>file path</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-format-desc">
+        <source>Render output in a particular format. Available: %1. Default: %2.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-format-value">
+        <source>format</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-add-finish-table-header-key">
+        <source>Key</source>
+        <oldsource>key</oldsource>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-add-finish-table-header-value">
+        <source>Value</source>
+        <extracomment>CLI table header</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -10,6 +10,7 @@
 #include "databaserollbackcommand.h"
 
 #include "dbmigrations/m0002_createfeedstable.h"
+#include "dbmigrations/m0003_createitemstable.h"
 
 #include <Firfuorida/Migrator>
 
@@ -66,6 +67,7 @@ void DatabaseCommand::initMigrations()
 {
     m_migrator = std::make_unique<Firfuorida::Migrator>(dbConName(), u"migrations"_s);
     new M0002_CreateFeedsTable(m_migrator.get());
+    new M0003_CreateItemsTable(m_migrator.get());
 }
 
 void DatabaseCommand::init()

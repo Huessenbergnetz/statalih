@@ -9,6 +9,7 @@
 #include <QSqlQuery>
 #include <QSqlDatabase>
 #include <QTextStream>
+#include <QNetworkReply>
 #include <cstdio>
 #include <iostream>
 
@@ -74,6 +75,21 @@ CLI::RC CLI::dbError(const QSqlQuery &query) const
 CLI::RC CLI::dbError(const QSqlDatabase &db) const
 {
     return dbError(db.lastError());
+}
+
+CLI::RC CLI::parsingError(const QString &error) const
+{
+    return this->error(error, RC::ParsingError);
+}
+
+CLI::RC CLI::networkError(const QString &error) const
+{
+    return this->error(error, RC::NetworkError);
+}
+
+CLI::RC CLI::networkError(QNetworkReply *reply) const
+{
+    return networkError(reply->errorString());
 }
 
 CLI::RC CLI::internalError(const QString &error) const

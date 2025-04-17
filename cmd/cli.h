@@ -13,6 +13,7 @@
 class QSqlError;
 class QSqlQuery;
 class QSqlDatabase;
+class QNetworkReply;
 
 /*!
  * \brief Basic class for command line interface operations.
@@ -41,7 +42,9 @@ public:
         ConfigError = 3,    /**< Invalid configuration */
         FileError = 4,      /**< Error while accessing a file */
         DbError = 5,        /**< Database error */
-        InternalError =6    /**< Internal error */
+        ParsingError = 6,   /**< Error while parsing input data */
+        NetworkError = 7,   /**< Error while performing network requests */
+        InternalError = 8   /**< Internal error */
     };
 
 protected:
@@ -101,6 +104,24 @@ protected:
      * \sa error(), printError()
      */
     [[nodiscard]] RC dbError(const QSqlDatabase &db) const;
+
+    /*!
+     * \brief Print the \a error text to \c stderr and returns the error code for a parsing error.
+     * \sa error(), printError()
+     */
+    [[nodiscard]] RC parsingError(const QString &error) const;
+
+    /*!
+     * \brief Print the \a error text to \c stderr and returns the error code for a network error.
+     * \sa error(), printError()
+     */
+    [[nodiscard]] RC networkError(const QString &error) const;
+
+    /*!
+     * \brief Prints the error text from the network \a reply to \c stderr and returns the error code for a network error.
+     * \sa error(), printError()
+     */
+    [[nodiscard]] RC networkError(QNetworkReply *reply) const;
 
     /*!
      * \brief Prints the \a error to \c stderr and return the error code for an internal error.

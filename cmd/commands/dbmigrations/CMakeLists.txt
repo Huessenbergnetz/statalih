@@ -5,4 +5,6 @@ target_sources(statalihcmd
     PRIVATE
         m0002_createfeedstable.cpp
         m0002_createfeedstable.h
+        m0003_createitemstable.cpp
+        m0003_createitemstable.h
 )

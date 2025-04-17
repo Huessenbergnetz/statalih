@@ -7,6 +7,7 @@
 
 #include "commands/command.h"
 #include "commands/databasecommand.h"
+#include "commands/feedscommand.h"
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -65,8 +66,8 @@ void Controller::init()
                                               //% "Path to configuration ini file. Default: %1"
                                               qtTrId("statalihcmd-opt-global-inifile-desc").arg(iniFileDefVal),
                                               //: CLI option value name
-                                              //% "ini file"
-                                              qtTrId("statalihcmd-opt-global-inifile-val"),
+                                              //% "file path"
+                                              qtTrId("statalihcmd-opt-value-filepath"),
                                               iniFileDefVal));
 
     m_globalOptions.append(QCommandLineOption(QStringList({u"q"_s, u"quiet"_s}),
@@ -75,6 +76,7 @@ void Controller::init()
                                               qtTrId("statalihcmd-opt-global-quiet-desc")));
 
     new DatabaseCommand(this);
+    new FeedsCommand(this);
 }
 
 void Controller::showHelp() const
