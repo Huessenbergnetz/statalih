@@ -21,6 +21,8 @@ target_sources(statalihcmd
         feedparser.h
         utils.cpp
         utils.h
+        itemimageextractor.cpp
+        itemimageextractor.h
 )
 
 add_subdirectory(commands)

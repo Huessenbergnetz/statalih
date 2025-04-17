@@ -5,12 +5,14 @@
 
 #include "feedsaddcommand.h"
 #include "feedparser.h"
+#include "itemimageextractor.h"
 #include "utils.h"
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <QDomDocument>
 #include <QDomElement>
+#include <QHttpHeaders>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -22,6 +24,7 @@
 #include <QSqlQuery>
 #include <QTextStream>
 #include <QUrl>
+
 #include <QDebug>
 
 #include <chrono>
@@ -175,9 +178,9 @@ void FeedsAddCommand::exec(QCommandLineParser *parser)
         m_coordsSet = true;
     }
 
-    m_title = parser->value(u"title"_s).simplified();
-    m_slug = parser->value(u"slug"_s).simplified();
-    m_description = parser->value(u"description"_s).simplified();
+    m_overrideTitle = parser->value(u"title"_s).simplified();
+    m_overrideSlug = parser->value(u"slug"_s).simplified();
+    m_overrideDescription = parser->value(u"description"_s).simplified();
     m_format = parser->value(u"format"_s).trimmed().toLower();
 
     printDone();
@@ -206,6 +209,11 @@ void FeedsAddCommand::feedFetched(QNetworkReply *reply)
     reply->deleteLater();
     if (reply->error() == QNetworkReply::NoError) {
         printDone();
+
+        if (reply->hasRawHeader("etag")) {
+            const auto headers = reply->headers();
+            m_etag = QString::fromLatin1(headers.value("etag"));
+        }
 
         //: Satus message
         //% "Parsing XML"
@@ -246,6 +254,8 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
 {
     printDone();
 
+    m_feed = feed;
+
     CLI::RC rc{RC::OK};
 
     rc = openDb(HBNST_DBCONNAME);
@@ -265,7 +275,7 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    q.bindValue(u":source"_s, feed.source());
+    q.bindValue(u":source"_s, m_feed.source());
 
     if (Q_UNLIKELY(!q.exec())) {
         printFailed();
@@ -280,24 +290,25 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO feeds (slug, title, description, source, link, "lastBuildDate", "lastFetch", coords, data)
-                              VALUES (:slug, :title, :description, :source, :link, :lastBuildDate, :lastFetch, :coords, :data)
+    if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO feeds (slug, title, description, source, link, etag, "lastBuildDate", "lastFetch", coords, data)
+                              VALUES (:slug, :title, :description, :source, :link, :etag, :lastBuildDate, :lastFetch, :coords, :data)
                               RETURNING id)-"_s))) {
         printFailed();
         exit(dbError(q));
         return;
     }
 
-    QString title = m_title.isEmpty() ? feed.title() : m_title;
-    QString slug = m_slug.isEmpty() ? Utils::slugify(title) : Utils::slugify(m_slug);
-    QString desc = m_description.isEmpty() ? feed.description() : m_description;
+    m_title = m_overrideTitle.isEmpty() ? m_feed.title() : m_overrideTitle;
+    m_slug = m_overrideSlug.isEmpty() ? Utils::slugify(m_title) : Utils::slugify(m_overrideSlug);
+    m_description = m_overrideDescription.isEmpty() ? Utils::cleanDescription(m_feed.description()) : m_overrideDescription;
 
-    q.bindValue(u":slug"_s, slug);
-    q.bindValue(u":title"_s, title);
-    q.bindValue(u":description"_s, desc);
-    q.bindValue(u":source"_s, feed.source());
-    q.bindValue(u":link"_s, feed.link());
-    q.bindValue(u":lastBuildDate"_s, feed.lastBuildDate());
+    q.bindValue(u":slug"_s, m_slug);
+    q.bindValue(u":title"_s, m_title);
+    q.bindValue(u":description"_s, m_description);
+    q.bindValue(u":source"_s, m_feed.source());
+    q.bindValue(u":link"_s, m_feed.link());
+    q.bindValue(u":etag"_s, m_etag);
+    q.bindValue(u":lastBuildDate"_s, m_feed.lastBuildDate());
     q.bindValue(u":lastFetch"_s, QDateTime::currentDateTimeUtc());
     if (m_coordsSet) {
         const QString coords = u"(%1,%2)"_s.arg(QString::number(m_latitude), QString::number(m_longitude));
@@ -319,7 +330,7 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    const auto feedDbId = q.value(0).toInt();
+    m_feedId = q.value(0).toInt();
 
     if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO items ("feedId", guid, title, description, author, link, "pubDate")
                               VALUES (:feedId, :guid, :title, :description, :author, :link, :pubDate))-"_s))) {
@@ -328,12 +339,12 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    const QList<FeedItem> items = feed.items();
+    const QList<FeedItem> items = m_feed.items();
     for (const auto &item : items) {
-        q.bindValue(u":feedId"_s, feedDbId);
+        q.bindValue(u":feedId"_s, m_feedId);
         q.bindValue(u":guid"_s, item.guid());
         q.bindValue(u":title"_s, item.title());
-        q.bindValue(u":description"_s, item.description());
+        q.bindValue(u":description"_s, Utils::cleanDescription(item.description()));
         q.bindValue(u":author"_s, item.author());
         q.bindValue(u":link"_s, item.link());
         q.bindValue(u":pubDate"_s, item.pubDate());
@@ -342,6 +353,67 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
     }
 
     printDone();
+
+    //% "Fetching item images"
+    printStatus(qtTrId("statalihcmd-status-feeds-add-fetch-imgs"));
+
+    auto iie = new ItemImageExtractor(this);
+    connect(iie, &ItemImageExtractor::finished, this, &FeedsAddCommand::imagesFetched);
+    iie->start(m_feed.items());
+
+}
+
+void FeedsAddCommand::imagesFetched(const QVariantMap &itemImages, const QMap<QString,QString> &errors)
+{
+
+    printDone();
+
+    if (!errors.empty()) {
+        //% "While fetching item images the following errors occured:"
+        printMessage(qtTrId("statalih-msg-feeds-add-fetch-imgs-errors"));
+        for (auto i = errors.constBegin(), end = errors.constEnd(); i != end; ++i) {
+            const QString msg = i.key() + u": "_s + i.value();
+            printWarning(msg);
+        }
+    }
+
+    //: Status messages
+    //% "Adding item image information to database"
+    printStatus(qtTrId("statalih-status-feeds-add-images-add-db"));
+
+    if (!itemImages.empty()) {
+
+        QSqlQuery q(QSqlDatabase::database(HBNST_DBCONNAME));
+
+        bool ok = q.prepare(uR"-(UPDATE items SET data = :data WHERE guid = :guid)-"_s);
+
+        if (ok) {
+            QStringList queryErrors;
+            for (auto i = itemImages.constBegin(), end = itemImages.constEnd(); i != end; ++i) {
+                const QString guid = i.key();
+                const QJsonObject imgData({
+                                              {u"image"_s, QJsonObject::fromVariantMap(i.value().toMap())}
+                                          });
+                q.bindValue(u":guid"_s, guid);
+                q.bindValue(u":data"_s, QString::fromUtf8(QJsonDocument(imgData).toJson(QJsonDocument::Compact)));
+
+                if (!q.exec()) {
+                    qDebug() << q.lastError().text();
+                    queryErrors << q.lastError().text();
+                }
+            }
+
+            if (queryErrors.empty()) {
+                printDone();
+            } else {
+                printFailed();
+                printError(queryErrors);
+            }
+        } else {
+            printFailed();
+            printError(q.lastError().text());
+        }
+    }
 
     if (m_format == "table"_L1) {
         const QStringList headers{
@@ -354,13 +426,13 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         };
 
         QList<QStringList> data;
-        data << QStringList({u"ID"_s, QString::number(feedDbId)});
-        data << QStringList({u"Title"_s, title});
-        data << QStringList({u"Slug"_s, slug});
-        data << QStringList({u"Source"_s, feed.source().toString()});
-        data << QStringList({u"Link"_s, feed.link().toString()});
-        data << QStringList({u"Description"_s, desc});
-        data << QStringList({u"Items"_s, QString::number(items.size())});
+        data << QStringList({u"ID"_s, QString::number(m_feedId)});
+        data << QStringList({u"Title"_s, m_title});
+        data << QStringList({u"Slug"_s, m_slug});
+        data << QStringList({u"Source"_s, m_feed.source().toString()});
+        data << QStringList({u"Link"_s, m_feed.link().toString()});
+        data << QStringList({u"Description"_s, m_description});
+        data << QStringList({u"Items"_s, QString::number(m_feed.items().size())});
         QString coords;
         if (m_coordsSet) {
             coords = u"N %1 E %2"_s.arg(QString::number(m_latitude), QString::number(m_longitude));
@@ -371,13 +443,13 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
     } else if (m_format == "json"_L1 || m_format == "json-pretty"_L1) {
 
         QJsonObject o{
-            {u"id"_s, feedDbId},
-            {u"title"_s, title},
-            {u"slug"_s, slug},
-            {u"source"_s, feed.source().toString()},
-            {u"link"_s, feed.link().toString()},
-            {u"description"_s, desc},
-            {u"items"_s, items.size()}
+            {u"id"_s, m_feedId},
+            {u"title"_s, m_title},
+            {u"slug"_s, m_slug},
+            {u"source"_s, m_feed.source().toString()},
+            {u"link"_s, m_feed.link().toString()},
+            {u"description"_s, m_description},
+            {u"items"_s, m_feed.items().size()}
         };
 
         if (m_coordsSet) {

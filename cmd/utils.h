@@ -11,6 +11,7 @@
 namespace Utils {
 
 QString slugify(const QString &str);
+QString cleanDescription(const QString &desc);
 
 }
 

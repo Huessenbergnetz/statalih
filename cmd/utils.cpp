@@ -5,6 +5,8 @@
 
 #include "utils.h"
 
+#include <QRegularExpression>
+
 using namespace Qt::StringLiterals;
 
 static constexpr char16_t asciiTab{9};
@@ -17,6 +19,8 @@ static constexpr char16_t ascii_Z{90};
 static constexpr char16_t ascii_underscore{95};
 static constexpr char16_t ascii_a{97};
 static constexpr char16_t ascii_z{122};
+
+static QRegularExpression tagRegEx{u"<[^>]*>"_s};
 
 QString Utils::slugify(const QString &str)
 {
@@ -39,4 +43,11 @@ QString Utils::slugify(const QString &str)
     }
 
     return _str2;
+}
+
+QString Utils::cleanDescription(const QString &desc)
+{
+    QString cleaned = desc.simplified();
+    cleaned.remove(tagRegEx);
+    return cleaned;
 }

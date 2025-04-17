@@ -24,6 +24,7 @@ void M0002_CreateFeedsTable::up()
                 description TEXT,
                 source VARCHAR(2048),
                 link VARCHAR(2048),
+                etag VARCHAR(255),
                 "lastBuildDate" TIMESTAMP,
                 "lastFetch" TIMESTAMP,
                 coords POINT,

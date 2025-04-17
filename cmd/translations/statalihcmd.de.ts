@@ -301,9 +301,21 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <extracomment>CLI option value name</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message id="statalihcmd-status-feeds-add-fetch-imgs">
+        <source>Fetching item images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalih-msg-feeds-add-fetch-imgs-errors">
+        <source>While fetching item images the following errors occured:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalih-status-feeds-add-images-add-db">
+        <source>Adding item image information to database</source>
+        <extracomment>Status messages</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
     <message id="statalihcmd-command-feeds-add-finish-table-header-key">
         <source>Key</source>
-        <oldsource>key</oldsource>
         <extracomment>CLI table header</extracomment>
         <translation type="unfinished"></translation>
     </message>

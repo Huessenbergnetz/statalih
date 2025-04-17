@@ -26,6 +26,7 @@ void M0003_CreateItemsTable::up()
                 author VARCHAR(255),
                 link VARCHAR(2048),
                 "pubDate" TIMESTAMP,
+                data JSONB,
                 CONSTRAINT guid_unique UNIQUE(guid),
                 CONSTRAINT "feeds_feedId_idx" FOREIGN KEY ("feedId") REFERENCES feeds (id) ON DELETE CASCADE ON UPDATE CASCADE
             )

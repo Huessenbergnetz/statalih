@@ -19,6 +19,8 @@ target_sources(statalihcmd
         feedscommand.h
         feedsaddcommand.cpp
         feedsaddcommand.h
+        feedslistcommand.cpp
+        feedslistcommand.h
 )
 
 add_subdirectory(dbmigrations)
