@@ -191,22 +191,6 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <extracomment>CLI option description</extracomment>
         <translation type="unfinished"></translation>
     </message>
-    <message id="statalihcmd-opt-feeds-add-value">
-        <source>URL</source>
-        <extracomment>CLI option value name</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message id="statalihcmd-opt-feeds-add-coords-desc">
-        <source>Coordinates of the location covered in the feed. Enter them like &quot;%1;%2&quot;.</source>
-        <oldsource>Coordinates of the location covered in the feed.Enter them like -c &quot;%1;%2&quot;.</oldsource>
-        <extracomment>CLI option description, %1 will be replaced by the example latitude, %2 by the example longitude</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message id="statalihcmd-opt-feeds-add-coords-value">
-        <source>latitude;longitude</source>
-        <extracomment>CLI option value name</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
     <message id="statalihcmd-err-feeds-add-missing-url">
         <source>Please use the -u parameter to specify the URL of the web feed.</source>
         <extracomment>Error message</extracomment>
@@ -228,7 +212,8 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <translation type="unfinished"></translation>
     </message>
     <message id="statalihcmd-command-feeds-add-description">
-        <source>Adds a new web feed to the database. Will download the feed, parse it and the information and items to the system.</source>
+        <source>Adds a new web feed to the database. Will download the feed, parse it and store the information and items to the system.</source>
+        <oldsource>Adds a new web feed to the database. Will download the feed, parse it and the information and items to the system.</oldsource>
         <extracomment>CLI command description</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -322,6 +307,99 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
     <message id="statalihcmd-command-feeds-add-finish-table-header-value">
         <source>Value</source>
         <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-places-summary">
+        <source>Manage places</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-name-desc">
+        <source>Name of the place to add. (required)</source>
+        <oldsource>Name of the place to add.</oldsource>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-slug-desc">
+        <source>Slug for this place used in URLs.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-parent-desc">
+        <source>Database ID of a place this place belongs to. Like a district belonging to a city. Use %1 to get a list of places.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-opt-value-dbid">
+        <source>ID</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-coords-desc">
+        <source>Coordinates of the place. Enter them like &quot;%1;%2&quot;.</source>
+        <extracomment>CLI option description, %1 will be replaced by the example latitude, %2 by the example longitude</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-coords-value">
+        <source>latitude;longitude</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-places-add-summary">
+        <source>Add a new place</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-places-add-description">
+        <source>Adds a new place to the database.</source>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-value-url">
+        <source>URL</source>
+        <extracomment>CLI option value name</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-link-desc">
+        <source>URL of a website describing this place.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-description-desc">
+        <source>Short description for this place.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-places-add-admin-id">
+        <source>Administrative ID for this place.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-places-add-missing-name">
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-err-places-add-invalid-parent">
+        <source>Invalid parent ID. Has to be an integer value bigger than 0.</source>
+        <oldsource>Invalid parent ID. Has to be an integer value bigger than 0.
+</oldsource>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-invalid-link">
+        <source>Invalid URL given for link option.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-places-add-db-add">
+        <source>Adding new place</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-places-add-nonhttp-link">
+        <source>Link has to be a HTTP or HTTPS URL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-err-places-add-slug-in-use">
+        <source>This slug is already in use by another place (%1, ID: %2).</source>
+        <oldsource>This slug is already in use by another place (%1, ID: %2).
+</oldsource>
         <translation type="unfinished"></translation>
     </message>
 </context>

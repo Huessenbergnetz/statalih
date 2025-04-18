@@ -47,18 +47,7 @@ void FeedsAddCommand::init()
                               qtTrId("statalihcmd-opt-feeds-add-url-desc"),
                               //: CLI option value name
                               //% "URL"
-                              qtTrId("statalihcmd-opt-feeds-add-value"));
-
-    QLocale locale;
-    m_cliOptions.emplace_back(QStringList({u"c"_s, u"coordinates"_s}),
-                              //: CLI option description, %1 will be replaced by the
-                              //: example latitude, %2 by the example longitude
-                              //% "Coordinates of the location covered in the feed. "
-                              //% "Enter them like \"%1;%2\"."
-                              qtTrId("statalihcmd-opt-feeds-add-coords-desc").arg(locale.toString(51.571667), locale.toString(9.166667)),
-                              //: CLI option value name
-                              //% "latitude;longitude"
-                              qtTrId("statalihcmd-opt-feeds-add-coords-value"));
+                              qtTrId("statalihcmd-opt-value-url"));
 
     m_cliOptions.emplace_back(QStringList({u"t"_s, u"title"_s}),
                               //: CLI option description
@@ -80,6 +69,7 @@ void FeedsAddCommand::init()
                               qtTrId("statalihcmd-opt-feeds-add-description-desc"),
                               qtTrId("statalihcmd-opt-value-text"));
 
+    QLocale locale;
     const QStringList formats({u"table"_s, u"json"_s, u"json-pretty"_s});
     m_cliOptions.emplace_back(QStringList({u"f"_s, u"format"_s}),
                               //: CLI option description
@@ -480,7 +470,7 @@ QString FeedsAddCommand::summary() const
 QString FeedsAddCommand::description() const
 {
     //: CLI command description
-    //% "Adds a new web feed to the database. Will download the feed, parse it and the information and items to the system."
+    //% "Adds a new web feed to the database. Will download the feed, parse it and store the information and items to the system."
     return qtTrId("statalihcmd-command-feeds-add-description");
 }
 

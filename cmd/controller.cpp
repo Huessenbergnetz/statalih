@@ -8,6 +8,7 @@
 #include "commands/command.h"
 #include "commands/databasecommand.h"
 #include "commands/feedscommand.h"
+#include "commands/placescommand.h"
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -77,6 +78,7 @@ void Controller::init()
 
     new DatabaseCommand(this);
     new FeedsCommand(this);
+    new PlacesCommand(this);
 }
 
 void Controller::showHelp() const

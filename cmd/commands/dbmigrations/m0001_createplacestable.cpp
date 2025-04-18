@@ -26,7 +26,7 @@ void M0001_CreatePlacesTable::up()
                 coords POINT,
                 description TEXT,
                 link VARCHAR(255),
-                created TIMESTAMP,
+                created TIMESTAMP NOT NULL,
                 updated TIMESTAMP,
                 data JSONB,
                 CONSTRAINT places_parent_idx FOREIGN KEY (parent) REFERENCES places (id) ON DELETE SET NULL ON UPDATE CASCADE
