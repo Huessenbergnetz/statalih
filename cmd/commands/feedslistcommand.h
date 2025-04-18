@@ -6,7 +6,6 @@
 #ifndef HBNST_FEEDSLISTCOMMAND_H
 #define HBNST_FEEDSLISTCOMMAND_H
 
-
 class FeedsListCommand
 {
 public:

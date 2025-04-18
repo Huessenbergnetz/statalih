@@ -19,17 +19,20 @@ void M0002_CreateFeedsTable::up()
         raw(uR"-(
             CREATE TABLE feeds (
                 id SERIAL PRIMARY KEY,
+                "placeId" INTEGER,
                 slug VARCHAR(255) NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
                 source VARCHAR(2048),
-                link VARCHAR(2048),
+                link VARCHAR(255),
                 etag VARCHAR(255),
                 "lastBuildDate" TIMESTAMP,
                 "lastFetch" TIMESTAMP,
-                coords POINT,
+                created TIMESTAMP NOT NULL,
+                updated TIMESTAMP,
                 data JSONB,
-                CONSTRAINT slug_unique UNIQUE(slug)
+                CONSTRAINT slug_unique UNIQUE(slug),
+                CONSTRAINT "feeds_placeId_idx" FOREIGN KEY ("placeId") REFERENCES places (id) ON DELETE CASCADE ON UPDATE CASCADE
             )
         )-"_s);
     } else {
