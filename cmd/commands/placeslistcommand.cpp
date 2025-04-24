@@ -122,6 +122,9 @@ void PlacesListCommand::exec(QCommandLineParser *parser)
             //: CLI table header
             //% "Link"
             qtTrId("statalihcmd-table-header-link"),
+            //: CLI table header, means the numer of feeds
+            //% "Feeds"
+            qtTrId("statalihcmd-places-list-table-header-feeds"),
             //: CLI table header
             //% "Created"
             qtTrId("statalihcmd-table-header-created"),
@@ -134,7 +137,8 @@ void PlacesListCommand::exec(QCommandLineParser *parser)
         QList<QStringList> data;
         while (q.next()) {
             QStringList row;
-            row << QString::number(q.value(0).toInt());
+            const auto id = q.value(0).toInt();
+            row << QString::number(id);
             row << q.value(1).toString();
             row << q.value(2).toString();
             const auto parentId = q.value(3).toInt();
@@ -147,6 +151,14 @@ void PlacesListCommand::exec(QCommandLineParser *parser)
                 row << QString();
             }
             row << q.value(6).toString();
+
+            QSqlQuery qq{QSqlDatabase::database(HBNST_DBCONNAME)};
+            qq.prepare(uR"-(SELECT COUNT(*) FROM feeds WHERE "placeId" = :placeId)-"_s);
+            qq.bindValue(u":placeId"_s, id);
+            qq.exec();
+            qq.next();
+            row << locale.toString(qq.value(0).toInt());
+
             row << locale.toString(q.value(7).toDateTime().toLocalTime(), QLocale::ShortFormat);
             const auto updated = q.value(8).toDateTime();
             if (updated.isValid()) {

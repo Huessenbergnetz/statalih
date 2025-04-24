@@ -491,5 +491,10 @@ This command line client helps to manage several aspects of Statalih.</oldsource
         <extracomment>Error message</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message id="statalihcmd-places-list-table-header-feeds">
+        <source>Feeds</source>
+        <extracomment>CLI table header, means the numer of feeds</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

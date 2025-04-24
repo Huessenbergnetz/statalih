@@ -108,6 +108,7 @@ void CLI::printStatus(const QString &status) const
 {
     if (!m_quiet) {
         std::printf("%-100s", status.toUtf8().constData()); // NOLINT(cppcoreguidelines-pro-type-vararg)
+        std::fflush(stdout);
     }
 }
 
