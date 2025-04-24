@@ -5,6 +5,7 @@
 
 #include "placescommand.h"
 #include "placesaddcommand.h"
+#include "placeslistcommand.h"
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -53,6 +54,7 @@ QString PlacesCommand::description() const
 void PlacesCommand::init()
 {
     new PlacesAddCommand(this);
+    new PlacesListCommand(this);
 }
 
 #include "moc_placescommand.cpp"

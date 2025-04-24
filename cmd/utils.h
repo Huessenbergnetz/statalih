@@ -7,11 +7,22 @@
 #define HBNST_UTILS_H
 
 #include <QString>
+#include <QVariant>
+
+#include <optional>
+#include <utility>
 
 namespace Utils {
 
 QString slugify(const QString &str);
 QString cleanDescription(const QString &desc);
+
+QString coordsToDb(float latitude, float longitude);
+std::optional<std::pair<float,float>> coordsFromDb(const QVariant &v);
+QString humanCoords(float latitude, float longitude);
+inline QString humanCoords(std::pair<float,float> coords) {
+    return Utils::humanCoords(coords.first, coords.second);
+}
 
 }
 

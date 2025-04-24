@@ -402,5 +402,73 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <extracomment>CLI table header</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message id="statalihcmd-opt-places-list-search-desc">
+        <source>Search for the text in name or slug.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-query-db">
+        <source>Querying database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-warn-places-list-nothing-found">
+        <source>Your query has not returned any result.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-id">
+        <source>ID</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-name">
+        <source>Name</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-slug">
+        <source>Slug</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-places-list-table-header-parentid">
+        <source>Parent ID</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-places-list-table-header-adminid">
+        <source>Administrative ID</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-places-list-table-header-coords">
+        <source>Coordinates</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-link">
+        <source>Link</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-created">
+        <source>Created</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-updated">
+        <source>Updated</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-places-list-summary">
+        <source>List places</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-places-list-description">
+        <source>List places available in the database.</source>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

@@ -239,8 +239,7 @@ void PlacesAddCommand::exec(QCommandLineParser *parser)
     q.bindValue(u":parent"_s, parentId > 0 ? parentId : QVariant());
     q.bindValue(u":adminId"_s, !adminId.isEmpty() ? adminId : QVariant());
     if (coordsSet) {
-        const QString coords = u"(%1,%2)"_s.arg(QString::number(latitude), QString::number(longitude));
-        q.bindValue(u":coords"_s, coords);
+        q.bindValue(u":coords"_s, Utils::coordsToDb(latitude, longitude));
     } else {
         q.bindValue(u":coords"_s, {});
     }
@@ -303,7 +302,7 @@ void PlacesAddCommand::exec(QCommandLineParser *parser)
         data << QStringList({u"Link"_s, link.toString()});
         QString coords;
         if (coordsSet) {
-            coords = u"N %1 E %2"_s.arg(QString::number(latitude), QString::number(longitude));
+            coords = Utils::humanCoords(latitude, longitude);
         }
         data << QStringList({u"Coordinates"_s, coords});
 

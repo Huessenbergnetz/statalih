@@ -5,6 +5,7 @@
 
 #include "utils.h"
 
+#include <QLocale>
 #include <QRegularExpression>
 
 using namespace Qt::StringLiterals;
@@ -50,4 +51,53 @@ QString Utils::cleanDescription(const QString &desc)
     QString cleaned = desc.simplified();
     cleaned.remove(tagRegEx);
     return cleaned;
+}
+
+QString Utils::coordsToDb(float latitude, float longitude)
+{
+    return u"(%1,%2)"_s.arg(QString::number(latitude), QString::number(longitude));
+}
+
+std::optional<std::pair<float,float>> Utils::coordsFromDb(const QVariant &v)
+{
+    const auto str = v.toString();
+    if (str.isEmpty()) {
+        return std::nullopt;
+    }
+
+    const auto openingParaIdx = str.indexOf('('_L1);
+    if (openingParaIdx < 0) {
+        return std::nullopt;
+    }
+
+    const auto closingParaIdx = str.indexOf(')'_L1);
+    if (closingParaIdx < 0) {
+        return std::nullopt;
+    }
+
+    const auto commadIdx = str.indexOf(','_L1);
+    if (commadIdx < 2) {
+        return std::nullopt;
+    }
+
+    const QString latitudeStr = str.sliced(openingParaIdx + 1, commadIdx - openingParaIdx - 1);
+    bool ok = false;
+    const auto latitude = latitudeStr.toFloat(&ok);
+    if (!ok) {
+        return std::nullopt;
+    }
+
+    const QString longitudeStr = str.sliced(commadIdx + 1, closingParaIdx - commadIdx - 1);
+    const auto longitude = longitudeStr.toFloat(&ok);
+    if (!ok) {
+        return std::nullopt;
+    }
+
+    return std::make_pair(latitude,longitude);
+}
+
+QString Utils::humanCoords(float latitude, float longitude)
+{
+    QLocale locale;
+    return u"N %1 E %2"_s.arg(locale.toString(latitude), locale.toString(longitude));
 }
