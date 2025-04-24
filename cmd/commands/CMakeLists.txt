@@ -21,6 +21,8 @@ target_sources(statalihcmd
         feedsaddcommand.h
         feedslistcommand.cpp
         feedslistcommand.h
+        feedsupdatecommand.cpp
+        feedsupdatecommand.h
         placescommand.cpp
         placescommand.h
         placesaddcommand.cpp

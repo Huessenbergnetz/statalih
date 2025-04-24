@@ -208,10 +208,7 @@ void FeedsAddCommand::feedFetched(QNetworkReply *reply)
     if (reply->error() == QNetworkReply::NoError) {
         printDone();
 
-        if (reply->hasRawHeader("etag")) {
-            const auto headers = reply->headers();
-            m_etag = QString::fromLatin1(headers.value("etag"));
-        }
+        m_etag = reply->header(QNetworkRequest::ETagHeader).toString();
 
         //: Satus message
         //% "Parsing XML"

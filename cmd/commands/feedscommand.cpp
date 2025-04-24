@@ -5,6 +5,7 @@
 
 #include "feedscommand.h"
 #include "feedsaddcommand.h"
+#include "feedsupdatecommand.h"
 
 #include <QCoreApplication>
 #include <QCommandLineParser>
@@ -53,6 +54,7 @@ QString FeedsCommand::description() const
 void FeedsCommand::init()
 {
     new FeedsAddCommand(this);
+    new FeedsUpdateCommand(this);
 }
 
 #include "moc_feedscommand.cpp"

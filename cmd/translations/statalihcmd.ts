@@ -496,5 +496,71 @@ This command line client helps to manage several aspects of Statalih.</oldsource
         <extracomment>CLI table header, means the numer of feeds</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message id="statalihcmd-opt-feeds-update-all-desc">
+        <source>Update all feeds</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-udpate-place-desc">
+        <source>Only update feeds that belong to place identified by ID.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-update-slug-desc">
+        <source>Only update feeds that belong to place identified by slug.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-update-id-desc">
+        <source>Only update feed with ID.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-update-invalid-feed-selection">
+        <source>Use one of %1 to select the feeds you want to update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-feeds-update-query-feeds-db">
+        <source>Query feeds to update from database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-update-summary">
+        <source>Fetch feed updates</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-update-description">
+        <source>Fetches feed updates and adds new items to the database.</source>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-update-invalid-feed-id">
+        <source>Invalid feed ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-update-invalid-place-id">
+        <source>Invalid place ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-warn-feeds-update-no-feeds">
+        <source>No feeds found for update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-feeds-update-fetching-feed">
+        <source>Fetching feed %1 (ID: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-warn-feeds-update-fetch-failed">
+        <source>Failed to fetch feed from %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-info-feeds-update-not-modified">
+        <source>Feed has not been modified since last update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-warn-feeds-update-parsing-failed">
+        <source>Failed to parse feed.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

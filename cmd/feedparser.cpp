@@ -40,11 +40,13 @@ void FeedParser::parseRss2(const QDomDocument &xml)
 {
     const QDomNodeList channels = xml.elementsByTagName(u"channel"_s);
     if (channels.size() != 1) {
+        emit feedParsed({});
         return;
     }
 
     const auto channel = channels.at(0).toElement();
     if (!channel.hasChildNodes()) {
+        emit feedParsed({});
         return;
     }
 

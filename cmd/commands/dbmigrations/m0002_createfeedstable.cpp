@@ -31,6 +31,7 @@ void M0002_CreateFeedsTable::up()
                 created TIMESTAMP NOT NULL,
                 updated TIMESTAMP,
                 data JSONB,
+                enabled BOOLEAN NOT NULL DEFAULT true,
                 CONSTRAINT slug_unique UNIQUE(slug),
                 CONSTRAINT source_unique UNIQUE(source),
                 CONSTRAINT "feeds_placeId_idx" FOREIGN KEY ("placeId") REFERENCES places (id) ON DELETE CASCADE ON UPDATE CASCADE
