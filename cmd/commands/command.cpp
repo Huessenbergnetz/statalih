@@ -9,6 +9,7 @@
 #include <QCoreApplication>
 #include <QTextStream>
 #include <QCommandLineParser>
+#include <QLocale>
 #include <algorithm>
 
 using namespace Qt::Literals::StringLiterals;
@@ -216,5 +217,20 @@ void Command::exit(CLI::RC rc) const
 {
     qApp->exit(static_cast<int>(rc));
 }
+
+void Command::addOutputFormatOption()
+{
+    QLocale locale;
+    const QStringList formats({u"table"_s, u"json"_s, u"json-pretty"_s});
+    m_cliOptions.emplace_back(QStringList({u"f"_s, u"format"_s}),
+                                  //: CLI option description
+                                  //% "Render output in a particular format. Available: %1. Default: %2."
+                                  qtTrId("statalihcmd-opt-format-desc").arg(locale.createSeparatedList(formats), formats.first()),
+                                  //: CLI option value name
+                                  //% "format"
+                                  qtTrId("statalihcmd-opt-format-value"),
+                                  formats.first());
+}
+
 
 #include "moc_command.cpp"

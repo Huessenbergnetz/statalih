@@ -9,6 +9,8 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QDateTime>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include <QLocale>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -84,6 +86,8 @@ void PlacesAddCommand::init()
                               qtTrId("statalihcmd-opt-places-add-admin-id"),
                               // source string defined in feedsaddcommand.cpp
                               qtTrId("statalihcmd-opt-value-text"));
+
+    addOutputFormatOption();
 }
 
 void PlacesAddCommand::exec(QCommandLineParser *parser)
@@ -251,6 +255,60 @@ void PlacesAddCommand::exec(QCommandLineParser *parser)
     }
 
     printDone();
+
+    q.next();
+    const auto id = q.value(0).toInt();
+
+    const QString outputFormat = parser->value(u"format"_s).toLower();
+    if (outputFormat == "json"_L1 || outputFormat == "json-pretty"_L1) {
+
+        QJsonObject o{
+            {u"id"_s, id},
+            {u"name"_s, name},
+            {u"slug"_s, slug},
+            {u"parent"_s, parentId > 0 ? parentId : QJsonValue()},
+            {u"administrativeId"_s, !adminId.isEmpty() ? adminId : QJsonValue()},
+            {u"description"_s, !description.isEmpty() ? description : QJsonValue()},
+            {u"link"_s, link.isValid() ? link.toString() : QJsonValue()}
+        };
+
+        if (coordsSet) {
+            o.insert(u"coordinates"_s, QJsonObject({
+                                                       {u"latitude"_s, latitude},
+                                                       {u"longitude"_s, longitude}
+                                                   }));
+        } else {
+            o.insert(u"coordinates"_s, {});
+        }
+
+        const QJsonDocument json(o);
+        QTextStream out(stdout, QIODeviceBase::WriteOnly);
+        out << json.toJson(outputFormat == "json"_L1 ? QJsonDocument::Compact : QJsonDocument::Indented);
+
+    } else {
+        const QStringList headers{
+                    // source string defined in feedsaddcommand.cpp
+                    qtTrId("statalihcmd-table-header-key"),
+                    // source string defined in feedsaddcommand.cpp
+                    qtTrId("statalihcmd-table-header-value")
+                };
+
+        QList<QStringList> data;
+        data << QStringList({u"ID"_s, QString::number(id)});
+        data << QStringList({u"Name"_s, name});
+        data << QStringList({u"Slug"_s, slug});
+        data << QStringList({u"Parent ID"_s, parentId > 0 ? QString::number(parentId) : QString()});
+        data << QStringList({u"Administrative ID"_s, adminId});
+        data << QStringList({u"Description"_s, description});
+        data << QStringList({u"Link"_s, link.toString()});
+        QString coords;
+        if (coordsSet) {
+            coords = u"N %1 E %2"_s.arg(QString::number(latitude), QString::number(longitude));
+        }
+        data << QStringList({u"Coordinates"_s, coords});
+
+        printTable(headers, data);
+    }
 
     exit(RC::OK);
 }

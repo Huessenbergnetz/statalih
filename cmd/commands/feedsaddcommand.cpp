@@ -69,16 +69,7 @@ void FeedsAddCommand::init()
                               qtTrId("statalihcmd-opt-feeds-add-description-desc"),
                               qtTrId("statalihcmd-opt-value-text"));
 
-    QLocale locale;
-    const QStringList formats({u"table"_s, u"json"_s, u"json-pretty"_s});
-    m_cliOptions.emplace_back(QStringList({u"f"_s, u"format"_s}),
-                              //: CLI option description
-                              //% "Render output in a particular format. Available: %1. Default: %2."
-                              qtTrId("statalihcmd-opt-format-desc").arg(locale.createSeparatedList(formats), formats.first()),
-                              //: CLI option value name
-                              //% "format"
-                              qtTrId("statalihcmd-opt-format-value"),
-                              formats.first());
+    addOutputFormatOption();
 }
 
 void FeedsAddCommand::exec(QCommandLineParser *parser)
@@ -409,10 +400,10 @@ void FeedsAddCommand::imagesFetched(const QVariantMap &itemImages, const QMap<QS
         const QStringList headers{
             //: CLI table header
             //% "Key"
-            qtTrId("statalihcmd-command-feeds-add-finish-table-header-key"),
+            qtTrId("statalihcmd-table-header-key"),
             //: CLI table header
             //% "Value"
-            qtTrId("statalihcmd-command-feeds-add-finish-table-header-value")
+            qtTrId("statalihcmd-table-header-value")
         };
 
         QList<QStringList> data;

@@ -44,6 +44,7 @@ protected:
     void runSubCommand(const QString &command, QCommandLineParser *parser);
     void showInvalidCommand(const QString &command) const;
     void exit(CLI::RC rc) const;
+    void addOutputFormatOption();
 
     QList<QCommandLineOption> m_cliOptions;
 

@@ -299,16 +299,6 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <extracomment>Status messages</extracomment>
         <translation type="unfinished"></translation>
     </message>
-    <message id="statalihcmd-command-feeds-add-finish-table-header-key">
-        <source>Key</source>
-        <extracomment>CLI table header</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message id="statalihcmd-command-feeds-add-finish-table-header-value">
-        <source>Value</source>
-        <extracomment>CLI table header</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
     <message id="statalihcmd-command-places-summary">
         <source>Manage places</source>
         <extracomment>CLI command summary</extracomment>
@@ -400,6 +390,16 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <source>This slug is already in use by another place (%1, ID: %2).</source>
         <oldsource>This slug is already in use by another place (%1, ID: %2).
 </oldsource>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-key">
+        <source>Key</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-value">
+        <source>Value</source>
+        <extracomment>CLI table header</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
