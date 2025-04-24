@@ -365,7 +365,7 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
         <translation type="unfinished"></translation>
     </message>
     <message id="statalihcmd-err-places-add-missing-name">
-        <source></source>
+        <source>Please use the -n argument to set a name for this place.</source>
         <translation type="unfinished"></translation>
     </message>
     <message id="statlihcmd-err-places-add-invalid-parent">
@@ -468,6 +468,25 @@ This command line client helps to manage several aspects of Zumftmeistar.</sourc
     <message id="statalihcmd-command-places-list-description">
         <source>List places available in the database.</source>
         <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-add-place-desc">
+        <source>Database ID of the place this feed belongs to.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-invalid-place-id">
+        <source>Invalid place database ID.</source>
+        <extracomment>Error message</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-status-feeds-add-checking-db">
+        <source>Checking database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-add-unknown-place">
+        <source>Can not find a place with ID %1 in the database.</source>
+        <extracomment>Error message</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -108,6 +108,7 @@ void PlacesAddCommand::exec(QCommandLineParser *parser)
     const QString name = parser->value(u"name"_s);
     if (Q_UNLIKELY(name.isEmpty())) {
         printFailed();
+        //% "Please use the -n argument to set a name for this place."
         exit(inputError(qtTrId("statalihcmd-err-places-add-missing-name")));
         return;
     }

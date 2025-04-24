@@ -41,6 +41,13 @@ FeedsAddCommand::FeedsAddCommand(QObject *parent)
 
 void FeedsAddCommand::init()
 {
+    m_cliOptions.emplace_back(QStringList({u"p"_s, u"place"_s}),
+                              //: CLI option description
+                              //% "Database ID of the place this feed belongs to."
+                              qtTrId("statalihcmd-opt-feeds-add-place-desc"),
+                              // source string defined in placesaddcommand.cpp
+                              qtTrId("statlihcmd-opt-value-dbid"));
+
     m_cliOptions.emplace_back(QStringList({u"u"_s, u"url"_s}),
                               //: CLI option description
                               //% "URL of the web feed to add."
@@ -88,6 +95,23 @@ void FeedsAddCommand::exec(QCommandLineParser *parser)
     //% "Parsing input values"
     printStatus(qtTrId("statalihcmd-status-parsing-input"));
 
+    const QString placeStr = parser->value(u"place"_s).trimmed();
+    if (placeStr.isEmpty()) {
+        printFailed();
+        //: Error message
+        //% "Invalid place database ID."
+        exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-place-id")));
+        return;
+    }
+
+    bool ok{false};
+    m_placeId = placeStr.toInt(&ok);
+    if (!ok) {
+        printFailed();
+        exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-place-id")));
+        return;
+    }
+
     const QString urlStr = parser->value(u"url"_s).trimmed();
     if (urlStr.isEmpty()) {
         printFailed();
@@ -117,52 +141,45 @@ void FeedsAddCommand::exec(QCommandLineParser *parser)
         return;
     }
 
-    if (parser->isSet(u"coordinates"_s)) {
-
-        const QStringList coordStr = parser->value(u"coordinates"_s).split(';'_L1);
-
-        if (Q_UNLIKELY(coordStr.size() != 2)) {
-            printFailed();
-            //: Error message
-            //% "Invalid coordinates"
-            exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-coords")));
-            return;
-        }
-
-        bool ok = false;
-        m_latitude = locale.toFloat(coordStr.at(0), &ok);
-        if (Q_UNLIKELY(!ok)) {
-            printFailed();
-            exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-coords")));
-            return;
-        }
-
-        if (m_latitude < -90.f || m_latitude > 90.f) {
-            printFailed();
-            exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-coords")));
-            return;
-        }
-
-        m_longitude = locale.toFloat(coordStr.at(1), &ok);
-        if (Q_UNLIKELY(!ok)) {
-            printFailed();
-            exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-coords")));
-            return;
-        }
-
-        if (m_longitude < -180.f || m_longitude > 180.f) {
-            printFailed();
-            exit(inputError(qtTrId("statalihcmd-err-feeds-add-invalid-coords")));
-            return;
-        }
-
-        m_coordsSet = true;
-    }
-
     m_overrideTitle = parser->value(u"title"_s).simplified();
     m_overrideSlug = parser->value(u"slug"_s).simplified();
     m_overrideDescription = parser->value(u"description"_s).simplified();
     m_format = parser->value(u"format"_s).trimmed().toLower();
+
+    printDone();
+
+    CLI::RC rc = openDb(HBNST_DBCONNAME);
+    if (rc != RC::OK) {
+        exit(rc);
+        return;
+    }
+
+    //% "Checking database"
+    printStatus(qtTrId("statalihcmd-status-feeds-add-checking-db"));
+
+    QSqlQuery q{QSqlDatabase::database(HBNST_DBCONNAME)};
+
+    if (Q_UNLIKELY(!q.prepare(u"SELECT * FROM places WHERE id = :id"_s))) {
+        printFailed();
+        exit(dbError(q));
+        return;
+    }
+
+    q.bindValue(u":id"_s, m_placeId);
+
+    if (Q_UNLIKELY(!q.exec())) {
+        printFailed();
+        exit(dbError(q));
+        return;
+    }
+
+    if (!q.next()) {
+        printFailed();
+        //: Error message
+        //% "Can not find a place with ID %1 in the database."
+        exit(inputError(qtTrId("statalihcmd-err-feeds-add-unknown-place").arg(m_placeId)));
+        return;
+    }
 
     printDone();
 
@@ -237,14 +254,6 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
 
     m_feed = feed;
 
-    CLI::RC rc{RC::OK};
-
-    rc = openDb(HBNST_DBCONNAME);
-    if (rc != RC::OK) {
-        exit(rc);
-        return;
-    }
-
     //% "Adding new web feed"
     printStatus(qtTrId("statalihcmd-status-feeds-add-db-add"));
 
@@ -271,8 +280,8 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO feeds (slug, title, description, source, link, etag, "lastBuildDate", "lastFetch", coords, data)
-                              VALUES (:slug, :title, :description, :source, :link, :etag, :lastBuildDate, :lastFetch, :coords, :data)
+    if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO feeds ("placeId", slug, title, description, source, link, etag, "lastBuildDate", "lastFetch", created, data)
+                              VALUES (:placeId, :slug, :title, :description, :source, :link, :etag, :lastBuildDate, :lastFetch, :created, :data)
                               RETURNING id)-"_s))) {
         printFailed();
         exit(dbError(q));
@@ -283,6 +292,7 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
     m_slug = m_overrideSlug.isEmpty() ? Utils::slugify(m_title) : Utils::slugify(m_overrideSlug);
     m_description = m_overrideDescription.isEmpty() ? Utils::cleanDescription(m_feed.description()) : m_overrideDescription;
 
+    q.bindValue(u":placeId"_s, m_placeId);
     q.bindValue(u":slug"_s, m_slug);
     q.bindValue(u":title"_s, m_title);
     q.bindValue(u":description"_s, m_description);
@@ -291,12 +301,7 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
     q.bindValue(u":etag"_s, m_etag);
     q.bindValue(u":lastBuildDate"_s, m_feed.lastBuildDate());
     q.bindValue(u":lastFetch"_s, QDateTime::currentDateTimeUtc());
-    if (m_coordsSet) {
-        const QString coords = u"(%1,%2)"_s.arg(QString::number(m_latitude), QString::number(m_longitude));
-        q.bindValue(u":coords"_s, coords);
-    } else {
-        q.bindValue(u":coords"_s, {});
-    }
+    q.bindValue(u":created"_s, QDateTime::currentDateTimeUtc());
     q.bindValue(u":data"_s, QJsonObject());
 
     if (Q_UNLIKELY(!q.exec())) {
@@ -414,11 +419,6 @@ void FeedsAddCommand::imagesFetched(const QVariantMap &itemImages, const QMap<QS
         data << QStringList({u"Link"_s, m_feed.link().toString()});
         data << QStringList({u"Description"_s, m_description});
         data << QStringList({u"Items"_s, QString::number(m_feed.items().size())});
-        QString coords;
-        if (m_coordsSet) {
-            coords = u"N %1 E %2"_s.arg(QString::number(m_latitude), QString::number(m_longitude));
-        }
-        data << QStringList({u"Coordinates"_s, coords});
 
         printTable(headers, data);
     } else if (m_format == "json"_L1 || m_format == "json-pretty"_L1) {
@@ -432,15 +432,6 @@ void FeedsAddCommand::imagesFetched(const QVariantMap &itemImages, const QMap<QS
             {u"description"_s, m_description},
             {u"items"_s, m_feed.items().size()}
         };
-
-        if (m_coordsSet) {
-            o.insert(u"coordinates"_s, QJsonObject({
-                                                       {u"latitude"_s, m_latitude},
-                                                       {u"longitude"_s, m_longitude}
-                                                   }));
-        } else {
-            o.insert(u"coordinates"_s, {});
-        }
 
         const QJsonDocument json(o);
         QTextStream out(stdout, QIODevice::WriteOnly);

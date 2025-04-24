@@ -43,9 +43,7 @@ private:
     QString m_format;
     QString m_etag;
     int m_feedId{0};
-    float m_latitude{0.0};
-    float m_longitude{0.0};
-    bool m_coordsSet{false};
+    int m_placeId{0};
 
     Q_DISABLE_COPY(FeedsAddCommand);
 };

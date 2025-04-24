@@ -32,6 +32,7 @@ void M0002_CreateFeedsTable::up()
                 updated TIMESTAMP,
                 data JSONB,
                 CONSTRAINT slug_unique UNIQUE(slug),
+                CONSTRAINT source_unique UNIQUE(source),
                 CONSTRAINT "feeds_placeId_idx" FOREIGN KEY ("placeId") REFERENCES places (id) ON DELETE CASCADE ON UPDATE CASCADE
             )
         )-"_s);
