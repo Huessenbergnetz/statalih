@@ -170,8 +170,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="statalihcmd-help-description">
-        <source>Zumftmeistar is a web management application for clubs and associations based on Cutelyst.
-This command line client helps to manage several aspects of Zumftmeistar.</source>
+        <source>Statalih is a web based RSS feed reader and aggregator that can show feed content based on distance to a reference point.
+This command line client helps to manage several aspects of Statalih.</source>
+        <oldsource>Statalih is a Cutelyst based web based RSS feed reader and aggregator that can show feed content based on distance to a reference point.
+This command line client helps to manage several aspects of Statalih.</oldsource>
         <extracomment>General description for zmc</extracomment>
         <translation type="unfinished"></translation>
     </message>

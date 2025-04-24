@@ -76,9 +76,9 @@ void Controller::init()
                                               //% "Be quiet and print less output."
                                               qtTrId("statalihcmd-opt-global-quiet-desc")));
 
-    new DatabaseCommand(this);
-    new FeedsCommand(this);
     new PlacesCommand(this);
+    new FeedsCommand(this);
+    new DatabaseCommand(this);
 }
 
 void Controller::showHelp() const
@@ -94,7 +94,8 @@ void Controller::showHelp() const
     out << '\n';
 
     //: General description for zmc
-    //% "Zumftmeistar is a web management application for clubs and associations based on Cutelyst.\nThis command line client helps to manage several aspects of Zumftmeistar."
+    //% "Statalih is a web based RSS feed reader and aggregator that can show feed content based on distance to a reference point.\n"
+    //% "This command line client helps to manage several aspects of Statalih."
     out << qtTrId("statalihcmd-help-description") << '\n';
     out << '\n';
 
