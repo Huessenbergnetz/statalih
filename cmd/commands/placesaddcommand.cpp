@@ -102,6 +102,8 @@ void PlacesAddCommand::exec(QCommandLineParser *parser)
         return;
     }
 
+    setGlobalOptions(parser);
+
     // source string defined in feedsaddcommand.cpp
     printStatus(qtTrId("statalihcmd-status-parsing-input"));
 

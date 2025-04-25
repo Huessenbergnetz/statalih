@@ -51,6 +51,8 @@ void PlacesListCommand::exec(QCommandLineParser *parser)
         return;
     }
 
+    setGlobalOptions(parser);
+
     CLI::RC rc = openDb(HBNST_DBCONNAME);
     if (rc != RC::OK) {
         exit(rc);

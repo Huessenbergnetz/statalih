@@ -91,6 +91,8 @@ void FeedsAddCommand::exec(QCommandLineParser *parser)
         return;
     }
 
+    setGlobalOptions(parser);
+
     //: Status message
     //% "Parsing input values"
     printStatus(qtTrId("statalihcmd-status-parsing-input"));

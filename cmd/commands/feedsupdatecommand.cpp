@@ -82,6 +82,8 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
         return;
     }
 
+    setGlobalOptions(parser);
+
     QLocale locale;
 
     // source string defined in feedsaddcommand.cpp
