@@ -45,6 +45,11 @@ private:
         QString etag;
         QDateTime lastBuildDate;
         QDateTime lastFetch;
+
+        [[nodiscard]] QString logInfo() const noexcept
+        {
+            return QStringLiteral("“%1” (ID: %2)").arg(title, QString::number(id));
+        }
     };
 
     QQueue<FeedStruct> m_feedsToUpdate;

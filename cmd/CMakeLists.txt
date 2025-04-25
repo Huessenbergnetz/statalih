@@ -56,6 +56,11 @@ target_include_directories(statalihcmd
         ${CMAKE_BINARY_DIR}/common
 )
 
+if (Systemd_FOUND)
+    target_compile_definitions(statalihcmd PRIVATE WITH_SYSTEMD)
+    target_link_libraries(statalihcmd PRIVATE PkgConfig::Systemd)
+endif (Systemd_FOUND)
+
 set_target_properties(statalihcmd
     PROPERTIES
         OUTPUT_NAME statalih

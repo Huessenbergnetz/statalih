@@ -25,6 +25,7 @@ find_package(FirfuoridaQt6 REQUIRED)
 find_package(ASqlQt6)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(Pwquality REQUIRED IMPORTED_TARGET pwquality>=1.2.2)
+pkg_search_module(Systemd IMPORTED_TARGET libsystemd)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)

@@ -14,6 +14,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
+#include <QLoggingCategory>
 #include <QMetaObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -25,6 +26,12 @@
 #include <QDebug>
 
 using namespace Qt::Literals::StringLiterals;
+
+#if defined(QT_DEBUG)
+Q_LOGGING_CATEGORY(ST_UPDATER, "statalih.updater");
+#else
+Q_LOGGING_CATEGORY(ST_UPDATER, "statalih.updater", QtInfoMsg);
+#endif
 
 #define HBNST_DBCONNAME u"dbcon"_s
 
@@ -82,9 +89,10 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
 
     if (!parser->isSet(u"a"_s) && !parser->isSet(u"p"_s) && !parser->isSet(u"s"_s) && !parser->isSet(u"id"_s)) {
         printFailed();
+        qCCritical(ST_UPDATER) << "No feed selected for update.";
         const QStringList opts{u"--all"_s, u"--place"_s, u"--slug"_s, u"--id"_s};
         //% "Use one of %1 to select the feeds you want to update."
-        exit(inputError(qtTrId("statalihcmd-err-feeds-update-invalid-feed-selection")));
+        exit(inputError(qtTrId("statalihcmd-err-feeds-update-invalid-feed-selection").arg(locale.createSeparatedList(opts))));
         return;
     }
 
@@ -94,6 +102,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
             const auto id = parser->value(u"id"_s).toInt(&ok);
             if (!ok) {
                 printFailed();
+                qCCritical(ST_UPDATER) << "Invalid feed ID.";
                 //% "Invalid feed ID."
                 exit(inputError(qtTrId("statalihcmd-err-feeds-update-invalid-feed-id")));
                 return;
@@ -103,6 +112,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
             const auto id = parser->value(u"place"_s).toInt(&ok);
             if (!ok) {
                 printFailed();
+                qCCritical(ST_UPDATER) << "Invalid place ID.";
                 //% "Invalid place ID."
                 exit(inputError(qtTrId("statalihcmd-err-feeds-update-invalid-place-id")));
                 return;
@@ -118,6 +128,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
         return;
     }
 
+    qCDebug(ST_UPDATER) << "Query feeds to update from database.";
     //% "Query feeds to update from database"
     printStatus(qtTrId("statalihcmd-status-feeds-update-query-feeds-db"));
 
@@ -143,6 +154,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
 
     if (Q_UNLIKELY(!q.prepare(qs))) {
         printFailed();
+        qCCritical(ST_UPDATER) << "Failed to prepare query to get feeds to update from database:" << q.lastError().text();
         exit(dbError(q));
         return;
     }
@@ -159,6 +171,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
 
     if (Q_UNLIKELY(!q.exec())) {
         printFailed();
+        qCCritical(ST_UPDATER) << "Failed to execute query to get feeds to update from database:" << q.lastError().text();
         exit(dbError(q));
         return;
     }
@@ -177,17 +190,20 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
     }
 
     if (m_feedsToUpdate.isEmpty()) {
+        qCInfo(ST_UPDATER) << "No feeds found for update.";
         //% "No feeds found for update."
-        printWarning(qtTrId("statalihcmd-warn-feeds-update-no-feeds"));
+        printMessage(qtTrId("statalihcmd-warn-feeds-update-no-feeds"));
         exit(RC::OK);
         return;
     }
+
+    qCInfo(ST_UPDATER) << m_feedsToUpdate.size() << "feeds found for update.";
 
     m_nam = new QNetworkAccessManager(this);
     m_nam->setTransferTimeout(10'000);
     connect(m_nam, &QNetworkAccessManager::finished, this, &FeedsUpdateCommand::feedFetched);
 
-    QMetaObject::invokeMethod(this, "updateFeed");
+    QMetaObject::invokeMethod(this, &FeedsUpdateCommand::updateFeed);
 }
 
 void FeedsUpdateCommand::updateFeed()
@@ -198,6 +214,7 @@ void FeedsUpdateCommand::updateFeed()
     }
 
     m_current = m_feedsToUpdate.dequeue();
+    qCInfo(ST_UPDATER).noquote() << "Start updating feed" << m_current.logInfo();
 
     QLocale locale;
     //% "Fetching feed %1 (ID: %2)"
@@ -207,6 +224,7 @@ void FeedsUpdateCommand::updateFeed()
     if (!m_current.etag.isEmpty()) {
         req.setHeader(QNetworkRequest::IfNoneMatchHeader, m_current.etag);
     }
+    qCInfo(ST_UPDATER).noquote() << "Fetching feed" << m_current.logInfo() << "from" << m_current.source.toString();
     m_nam->get(req);
 }
 
@@ -214,6 +232,8 @@ void FeedsUpdateCommand::feedFetched(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError) {
         printFailed();
+        qCWarning(ST_UPDATER).noquote().nospace() << "Failed to fetch feed " << m_current.logInfo() << " from "
+                                                  << m_current.source.toString() << ": " << reply->errorString();
         //% "Failed to fetch feed from %1: %2"
         printWarning(qtTrId("statalihcmd-warn-feeds-update-fetch-failed").arg(m_current.source.toString(), reply->errorString()));
         updateFeed();
@@ -221,6 +241,7 @@ void FeedsUpdateCommand::feedFetched(QNetworkReply *reply)
         const auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (statusCode == 304) {
             printDone();
+            qCInfo(ST_UPDATER).noquote() << "Feed" << m_current.logInfo() << "has not been modified since last update.";
             //% "Feed has not been modified since last update."
             printMessage(qtTrId("statlihcmd-info-feeds-update-not-modified"));
             updateFeed();
@@ -233,6 +254,9 @@ void FeedsUpdateCommand::feedFetched(QNetworkReply *reply)
             auto parseResult = doc.setContent(reply, QDomDocument::ParseOption::UseNamespaceProcessing);
             if (Q_UNLIKELY(!parseResult)) {
                 printFailed();
+                qCWarning(ST_UPDATER).noquote().nospace() << "Failed to parse XML of feed " << m_current.logInfo()
+                                                          << " at line " << parseResult.errorLine << " and column "
+                                                          << parseResult.errorColumn << ": " << parseResult.errorMessage;
                 // source string defined in feedsaddcommand.cpp
                 printWarning(qtTrId("statlihcmd-err-feeds-add-parsing").arg(QString::number(parseResult.errorLine), QString::number(parseResult.errorColumn), parseResult.errorMessage));
                 QMetaObject::invokeMethod(this, "updateFeed");
@@ -244,12 +268,19 @@ void FeedsUpdateCommand::feedFetched(QNetworkReply *reply)
             int errorColumn{-1};
             if (Q_UNLIKELY(!doc.setContent(reply, true, &errorMsg, &errorLine, &errorColumn))) {
                 printFailed();
+                qCWarning(ST_UPDATER).noquote().nospace() << "Failed to parse XML of feed " << m_current.logInfo()
+                                                          << " at line " << errorLine << " and column "
+                                                          << errorColumn << ": " << errorMsg;
                 // source string defined in feedsaddcommand.cpp
                 printWarning(qtTrId("statlihcmd-err-feeds-add-parsing").arg(QString::number(errorLine), QString::number(errorColumn), errorMsg));
                 QMetaObject::invokeMethod(this, "updateFeed");
                 return;
             }
 #endif
+
+            qCInfo(ST_UPDATER).noquote() << "Successfully fetched feed" << m_current.logInfo()
+                                         << "from" << m_current.source.toString();
+            qCInfo(ST_UPDATER).noquote() << "Start parsing feed" << m_current.logInfo();
 
             auto parser = new FeedParser(this);
             connect(parser, &FeedParser::feedParsed, this, &FeedsUpdateCommand::feedParsed);
@@ -264,16 +295,23 @@ void FeedsUpdateCommand::feedParsed(const Feed &feed)
     m_feed = feed;
     if (!feed.isValid()) {
         printFailed();
+        qCWarning(ST_UPDATER).noquote() << "Failed to parse feed" << m_current.logInfo();
         //% "Failed to parse feed."
         printWarning(qtTrId("statalihcmd-warn-feeds-update-parsing-failed"));
         QMetaObject::invokeMethod(this, "updateFeed");
         return;
     }
 
+    qCInfo(ST_UPDATER).noquote() << "Successfully parsed feed" << m_current.logInfo();
+
+    qCInfo(ST_UPDATER).noquote() << "Start updating feed" << m_current.logInfo() << "in the database.";
+
     QSqlQuery q{QSqlDatabase::database(HBNST_DBCONNAME)};
 
     if (Q_UNLIKELY(!q.prepare(uR"-(UPDATE feeds SET etag = :etag, "lastBuildDate" = :lastBuildDate, "lastFetch" = :lastFetch WHERE id = :id)-"_s))) {
         printFailed();
+        qCCritical(ST_UPDATER).noquote() << "Failed to prepare query to update feed" << m_current.logInfo()
+                                         << "in the database:" << q.lastError().text();
         exit(dbError(q));
         return;
     }
@@ -285,6 +323,8 @@ void FeedsUpdateCommand::feedParsed(const Feed &feed)
 
     if (Q_UNLIKELY(!q.exec())) {
         printFailed();
+        qCCritical(ST_UPDATER).noquote() << "Failed to execute query to update feed" << m_current.logInfo()
+                                         << "in the database:" << q.lastError().text();
         exit(dbError(q));
         return;
     }
@@ -295,45 +335,86 @@ void FeedsUpdateCommand::feedParsed(const Feed &feed)
     const QList<FeedItem> items = m_feed.items();
     for (const auto &item : items) {
 
-        q.prepare(uR"-(SELECT pubDate FROM items WHERE guid = :guid)-"_s);
-        q.bindValue(u":guid"_s, item.guid());
-        q.exec();
-        if (q.next()) {
-            // item already exists, check if update is needed
-            if (item.pubDate() > q.value(0).toDateTime()) {
-                updatedItems << item;
-                q.prepare(uR"-(UPDATE items SET title = :title, description = :description, author = :author, link = :link, "pubDate" = :pubDate
-                               WHERE guid = :guid)-"_s);
-                q.bindValue(u":title"_s, item.title());
-                q.bindValue(u":description"_s, Utils::cleanDescription(item.description()));
-                q.bindValue(u":author"_s, item.author());
-                q.bindValue(u":link"_s, item.link());
-                q.bindValue(u":pubDate"_s, item.pubDate());
-                q.exec();
+        if (Q_LIKELY(q.prepare(uR"-(SELECT "pubDate" FROM items WHERE guid = :guid)-"_s))) {
+            q.bindValue(u":guid"_s, item.guid());
+            if (Q_LIKELY(q.exec())) {
+                if (q.next()) {
+                    if (item.pubDate() > q.value(0).toDateTime()) {
+                        qCDebug(ST_UPDATER).noquote().nospace() << "Found item with guid “" << item.guid() << "“ in the database. "
+                                                                << "Updating it.";
+
+                        if (Q_LIKELY(q.prepare(uR"-(UPDATE items SET title = :title, description = :description, author = :author, link = :link, "pubDate" = :pubDate
+                                                    WHERE guid = :guid)-"_s))) {
+                            q.bindValue(u":title"_s, item.title());
+                            q.bindValue(u":description"_s, Utils::cleanDescription(item.description()));
+                            q.bindValue(u":author"_s, item.author());
+                            q.bindValue(u":link"_s, item.link());
+                            q.bindValue(u":pubDate"_s, item.pubDate());
+
+                            if (Q_LIKELY(q.exec())) {
+                                updatedItems << item;
+                            } else {
+                                qCWarning(ST_UPDATER).noquote().nospace() << "Failed to execute query to update item with guid “" << item.guid()
+                                                                          << "” in the database: " << q.lastError().text();
+                            }
+
+                        } else {
+                            qCWarning(ST_UPDATER).noquote().nospace() << "Failed to prepare query to update item with guid “" << item.guid()
+                                                                      << "” in the database: " << q.lastError().text();
+                        }
+                    }
+
+                } else {
+                    qCDebug(ST_UPDATER).noquote().nospace() << "Can not find item with guid “" << item.guid() << "“ in the database. "
+                                                            << "Must be new. Will insert it.";
+
+                    if (Q_LIKELY(q.prepare(uR"-(INSERT INTO items ("feedId", guid, title, description, author, link, "pubDate")
+                                                VALUES (:feedId, :guid, :title, :description, :author, :link, :pubDate))-"_s))) {
+
+                        q.bindValue(u":feedId"_s, m_current.id);
+                        q.bindValue(u":guid"_s, item.guid());
+                        q.bindValue(u":title"_s, item.title());
+                        q.bindValue(u":description"_s, Utils::cleanDescription(item.description()));
+                        q.bindValue(u":author"_s, item.author());
+                        q.bindValue(u":link"_s, item.link());
+                        q.bindValue(u":pubDate"_s, item.pubDate());
+
+                        if (Q_LIKELY(q.exec())) {
+                            newItems << item;
+                        } else {
+                            qCWarning(ST_UPDATER).noquote().nospace() << "Failed to exceute query to insert item with guid “" << item.guid()
+                                                                      << "” into the database: " << q.lastError().text();
+                        }
+
+                    } else {
+                        qCWarning(ST_UPDATER).noquote().nospace() << "Failed to prepare query to insert item with guid “" << item.guid()
+                                                                  << "” into the database: " << q.lastError().text();
+                    }
+
+                }
+            } else {
+                qCWarning(ST_UPDATER).noquote().nospace() << "Failed to execute query to select item with guid “"
+                                                          << item.guid() << "“ from the database: " << q.lastError().text();
             }
         } else {
-            // new item
-            newItems << item;
-            q.prepare(uR"-(INSERT INTO items ("feedId", guid, title, description, author, link, "pubDate")
-                           VALUES (:feedId, :guid, :title, :description, :author, :link, :pubDate))-"_s);
-            q.bindValue(u":feedId"_s, m_current.id);
-            q.bindValue(u":guid"_s, item.guid());
-            q.bindValue(u":title"_s, item.title());
-            q.bindValue(u":description"_s, Utils::cleanDescription(item.description()));
-            q.bindValue(u":author"_s, item.author());
-            q.bindValue(u":link"_s, item.link());
-            q.bindValue(u":pubDate"_s, item.pubDate());
-            q.exec();
+            qCWarning(ST_UPDATER).noquote().nospace() << "Failed to prepare query to select item with guid “"
+                                                      << item.guid() << "“ from the database: " << q.lastError().text();
         }
     }
 
     if (newItems.empty() && updatedItems.empty()) {
         printDone();
+        qCInfo(ST_UPDATER).noquote().nospace() << "Finished updating feed " << m_current.logInfo()
+                                               << ". No new or updated items.";
         QMetaObject::invokeMethod(this, "updateFeed");
     } else {
+        qCInfo(ST_UPDATER).noquote().nospace() << "Finished updating feed " << m_current.logInfo()
+                                               << " in the database. " << newItems.size() << " new items "
+                                               << "and " << updatedItems.size() << " updated items.";
         QList<FeedItem> _items = newItems;
         _items.append(updatedItems);
 
+        qCInfo(ST_UPDATER).noquote() << "Start fetching images for new and updated items of feed" << m_current.logInfo();
         auto iie = new ItemImageExtractor(this);
         connect(iie, &ItemImageExtractor::finished, this, &FeedsUpdateCommand::imagesFetched);
         iie->start(_items);
@@ -343,25 +424,58 @@ void FeedsUpdateCommand::feedParsed(const Feed &feed)
 void FeedsUpdateCommand::imagesFetched(const QVariantMap &itemImages, const QMap<QString,QString> &errors)
 {
     if (!itemImages.empty()) {
+        qCInfo(ST_UPDATER).noquote().nospace()
+                << "Finished fetching images for items of feed" << m_current.logInfo()
+                << ": found " << itemImages.size() << " images";
 
         QSqlQuery q{QSqlDatabase::database(HBNST_DBCONNAME)};
 
         for (auto i = itemImages.constBegin(), end = itemImages.constEnd(); i != end; ++i) {
             const QString guid = i.key();
-            q.prepare(uR"-(SELECT data FROM items WHERE guid = :guid)-"_s);
+
+            if (Q_UNLIKELY(!q.prepare(uR"-(SELECT data FROM items WHERE guid = :guid)-"_s))) {
+                qCWarning(ST_UPDATER).nospace().noquote()
+                        << "Failed to prepare database query to get data "
+                        << "for item with guid “" << guid << "”: " << q.lastError().text();
+                continue;
+            }
             q.bindValue(u":guid"_s, guid);
-            if (q.exec() && q.next()) {
+            if (Q_UNLIKELY(!q.exec())) {
+                qCWarning(ST_UPDATER).nospace().noquote()
+                        << "Failed to execute database query to get data "
+                        << "for item with guid “" << guid << "”: " << q.lastError().text();
+                continue;
+            }
+            if (Q_UNLIKELY(!q.next())) {
+                qCWarning(ST_UPDATER).nospace().noquote()
+                        << "Failed to find item with guid “" << guid << "”.";
+            } else {
                 auto data = q.value(0).toJsonObject();
                 data.insert("image"_L1, QJsonObject::fromVariantMap(i.value().toMap()));
 
-                q.prepare(uR"-(UPDATE items SET data = :data WHERE guid = :guid)-"_s);
+                if (Q_UNLIKELY(!q.prepare(uR"-(UPDATE items SET data = :data WHERE guid = :guid)-"_s))) {
+                    qCWarning(ST_UPDATER).noquote().nospace()
+                            << "Failed to prepare database query to update data "
+                            << "for item with guid “" << guid << "”: " << q.lastError().text();
+                    continue;
+                }
+
                 q.bindValue(u":data"_s, QString::fromUtf8(QJsonDocument(data).toJson(QJsonDocument::Compact)));
-                q.exec();
+
+                if (Q_UNLIKELY(!q.exec())) {
+                    qCWarning(ST_UPDATER).noquote().nospace()
+                            << "Failed to execute database query to update data "
+                            << "for item with guid “" << guid << "”: " << q.lastError().text();
+                }
             }
         }
+    } else {
+        qCInfo(ST_UPDATER).noquote().nospace() << "Finished fetching images for items of feed" << m_current.logInfo()
+                                               << ": Nothing to do.";
     }
 
     printDone();
+    qCInfo(ST_UPDATER) << "Finished updating feed" << m_current.logInfo();
     QMetaObject::invokeMethod(this, "updateFeed");
 }
 
