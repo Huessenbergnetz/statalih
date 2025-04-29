@@ -45,7 +45,7 @@ set(HBNST_TEMPLATESDIR ${HBNST_APPDIR}/templates CACHE PATH "Directory to instal
 set(HBNST_TRANSLATIONSDIR ${HBNST_APPDIR}/translations CACHE PATH "Directory to install statalih translation files into")
 set(HBNST_FORMSDIR ${HBNST_APPDIR}/forms CACHE PATH "Directory to install statalih form files into")
 set(HBNST_CONFFILE ${CMAKE_INSTALL_SYSCONFDIR}/statalih.ini CACHE FILEPATH "Path to the main configuration file")
-set(HBNST_TEST_LOG_RULES "*.debug=false;asql.*.debug=true;cutelyst.*.debug=true;hbnzm.*.debug=true;simplemail.*.debug=true" CACHE STRING "Logging rules for test script")
+set(HBNST_TEST_LOG_RULES "*.debug=false;asql.*.debug=true;cutelyst.*.debug=true;hbnst.*.debug=true;simplemail.*.debug=true" CACHE STRING "Logging rules for test script")
 
 option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
 
@@ -53,6 +53,11 @@ GNUInstallDirs_get_absolute_install_dir(HBNST_FULL_TRANSLATIONSDIR HBNST_TRANSLA
 GNUInstallDirs_get_absolute_install_dir(HBNST_FULL_TEMPLATESDIR HBNST_TEMPLATESDIR DATADIR)
 GNUInstallDirs_get_absolute_install_dir(HBNST_FULL_FORMSDIR HBNST_FORMSDIR DATADIR)
 GNUInstallDirs_get_absolute_install_dir(HBNST_FULL_CONFFILE HBNST_CONFFILE SYSCONFDIR)
+
+configure_file(testApp.sh.in testApp.sh
+    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    @ONLY
+)
 
 if(ENABLE_MAINTAINER_CFLAGS)
     add_compile_definitions(QT_DEPRECATED_WARNINGS)
@@ -91,6 +96,22 @@ set(HBNST_CONF_DB_NAME_DEFVAL "statalihdb")
 set(HBNST_CONF_DB_PORT "port")
 set(HBNST_CONF_DB_PORT_DEFVAL 5432)
 
+set(HBNST_CONF_DEFAULTS "defaults")
+set(HBNST_CONF_DEFAULTS_TZ "timezone")
+set(HBNST_CONF_DEFAULTS_TZ_DEFVAL "Europe/Berlin")
+set(HBNST_CONF_DEFAULTS_LOCALE "locale")
+set(HBNST_CONF_DEFAULTS_LOCALE_DEFVAL "en_US")
+
+set(HBNST_CONF_CORE "core")
+set(HBNST_CONF_CORE_SITENAME "sitename")
+set(HBNST_CONF_CORE_SITENAME_DEFVAL "Statalih")
+set(HBNST_CONF_CORE_TEMPLATE "template")
+set(HBNST_CONF_CORE_TEMPLATE_DEFVAL "bs5")
+set(HBNST_CONF_CORE_STATICPLUGIN "staticplugin")
+set(HBNST_CONF_CORE_STATICPLUGIN_DEFVAL "simple")
+set(HBNST_CONF_CORE_DATABASE "database")
+set(HBNST_CONF_CORE_DATABASE_DEFVAL "postgres://localhost:5432/statalihdb")
+
 configure_file(
   ${CMAKE_SOURCE_DIR}/common/confignames.h.in
   ${CMAKE_BINARY_DIR}/common/confignames.h
@@ -98,3 +119,4 @@ configure_file(
 )
 
 add_subdirectory(cmd)
+add_subdirectory(app)
