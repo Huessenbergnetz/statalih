@@ -562,5 +562,66 @@ This command line client helps to manage several aspects of Statalih.</oldsource
         <source>Failed to parse feed.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message id="statalihcmd-opt-feeds-list-search-desc">
+        <source>Search for the text in title or slug.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-list-place-desc">
+        <source>Database ID of the place the feeds to show belong to.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statlihcmd-warn-feeds-list-nothing-found">
+        <source>Your query has not returned any result.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-feeds-list-table-header-placeid">
+        <source>Place ID</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-feeds-list-table-header-title">
+        <source>Title</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-feeds-list-table-header-link">
+        <source>Link</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-feeds-list-table-header-lastFetch">
+        <source>Last Fetch</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-feeds-list-table-header-enabled">
+        <source>Enabled</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-yes">
+        <source>yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-no">
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-list-summary">
+        <source>List feeds</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-list-description">
+        <source>List feeds available in the database.</source>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-list-invalid-placeid">
+        <source>Invalid place ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

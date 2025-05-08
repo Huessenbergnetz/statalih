@@ -28,7 +28,7 @@ target_sources(statalihcmd
         placesaddcommand.cpp
         placesaddcommand.h
         placeslistcommand.cpp
-        placesaddcommand.h
+        placeslistcommand.h
 )
 
 add_subdirectory(dbmigrations)

@@ -6,10 +6,25 @@
 #ifndef HBNST_FEEDSLISTCOMMAND_H
 #define HBNST_FEEDSLISTCOMMAND_H
 
-class FeedsListCommand
+#include "command.h"
+
+class FeedsListCommand final : public Command
 {
+    Q_OBJECT
 public:
-    FeedsListCommand();
+    explicit FeedsListCommand(QObject *parent = nullptr);
+    ~FeedsListCommand() override = default;
+
+    void exec(QCommandLineParser *parser) override;
+
+    [[nodiscard]] QString summary() const;
+
+    [[nodiscard]] QString description() const;
+
+private:
+    void init();
+
+    Q_DISABLE_COPY(FeedsListCommand)
 };
 
 #endif // HBNST_FEEDSLISTCOMMAND_H
