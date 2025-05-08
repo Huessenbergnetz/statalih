@@ -42,7 +42,6 @@ private:
         int id;
         QString title;
         QUrl source;
-        QString etag;
         QDateTime lastBuildDate;
         QDateTime lastFetch;
 

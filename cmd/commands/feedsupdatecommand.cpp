@@ -134,7 +134,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
     //% "Query feeds to update from database"
     printStatus(qtTrId("statalihcmd-status-feeds-update-query-feeds-db"));
 
-    QString qs = uR"-(SELECT f.id, f.title, f.source, f.etag, f."lastBuildDate", f."lastFetch" FROM feeds f)-"_s;
+    QString qs = uR"-(SELECT f.id, f.title, f.source, f."lastBuildDate", f."lastFetch" FROM feeds f)-"_s;
 
     if (!parser->isSet(u"all"_s) && !parser->isSet(u"id"_s)) {
         qs += uR"-( JOIN places p ON p.id = f."placeId")-"_s;
@@ -185,9 +185,8 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
                                     q.value(0).toInt(),
                                     q.value(1).toString(),
                                     QUrl(q.value(2).toString()),
-                                    q.value(3).toString(),
-                                    q.value(4).toDateTime(),
-                                    q.value(5).toDateTime()
+                                    q.value(3).toDateTime(),
+                                    q.value(4).toDateTime()
                                 });
     }
 
@@ -199,7 +198,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
         return;
     }
 
-    qCInfo(ST_UPDATER) << m_feedsToUpdate.size() << "feeds found for update.";
+    qCInfo(ST_UPDATER) << "Start updating" << m_feedsToUpdate.size() << "feeds";
 
     m_nam = new QNetworkAccessManager(this);
     m_nam->setTransferTimeout(10'000);
@@ -211,6 +210,7 @@ void FeedsUpdateCommand::exec(QCommandLineParser *parser)
 void FeedsUpdateCommand::updateFeed()
 {
     if (m_feedsToUpdate.empty()) {
+        qCInfo(ST_UPDATER) << "Finished updating feeds";
         exit(RC::OK);
         return;
     }
@@ -223,8 +223,8 @@ void FeedsUpdateCommand::updateFeed()
     printStatus(qtTrId("statalihcmd-status-feeds-update-fetching-feed").arg(locale.quoteString(m_current.title), QString::number(m_current.id)));
 
     QNetworkRequest req{m_current.source};
-    if (!m_current.etag.isEmpty()) {
-        req.setHeader(QNetworkRequest::IfNoneMatchHeader, m_current.etag);
+    if (m_current.lastBuildDate.isValid()) {
+        req.setHeader(QNetworkRequest::IfModifiedSinceHeader, m_current.lastBuildDate);
     }
     qCInfo(ST_UPDATER).noquote() << "Fetching feed" << m_current.logInfo() << "from" << m_current.source.toString();
     m_nam->get(req);
@@ -248,8 +248,6 @@ void FeedsUpdateCommand::feedFetched(QNetworkReply *reply)
             printMessage(qtTrId("statlihcmd-info-feeds-update-not-modified"));
             updateFeed();
         } else {
-            m_current.etag = reply->header(QNetworkRequest::ETagHeader).toString();
-
             QDomDocument doc;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,5,0)
@@ -306,11 +304,19 @@ void FeedsUpdateCommand::feedParsed(const Feed &feed)
 
     qCInfo(ST_UPDATER).noquote() << "Successfully parsed feed" << m_current.logInfo();
 
+    if (m_feed.lastBuildDate() == m_current.lastBuildDate) {
+        printDone();
+        qCInfo(ST_UPDATER).noquote() << "Feed" << m_current.logInfo() << "has not been modified since last update.";
+        printMessage(qtTrId("statlihcmd-info-feeds-update-not-modified"));
+        QMetaObject::invokeMethod(this, "updateFeed");
+        return;
+    }
+
     qCInfo(ST_UPDATER).noquote() << "Start updating feed" << m_current.logInfo() << "in the database.";
 
     QSqlQuery q{QSqlDatabase::database(HBNST_DBCONNAME)};
 
-    if (Q_UNLIKELY(!q.prepare(uR"-(UPDATE feeds SET etag = :etag, "lastBuildDate" = :lastBuildDate, "lastFetch" = :lastFetch WHERE id = :id)-"_s))) {
+    if (Q_UNLIKELY(!q.prepare(uR"-(UPDATE feeds SET "lastBuildDate" = :lastBuildDate, "lastFetch" = :lastFetch WHERE id = :id)-"_s))) {
         printFailed();
         qCCritical(ST_UPDATER).noquote() << "Failed to prepare query to update feed" << m_current.logInfo()
                                          << "in the database:" << q.lastError().text();
@@ -318,7 +324,6 @@ void FeedsUpdateCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    q.bindValue(u":etag"_s, m_current.etag);
     q.bindValue(u":lastBuildDate"_s, m_feed.lastBuildDate());
     q.bindValue(u":lastFetch"_s, QDateTime::currentDateTimeUtc());
     q.bindValue(u":id"_s, m_current.id);
@@ -427,7 +432,7 @@ void FeedsUpdateCommand::imagesFetched(const QVariantMap &itemImages, const QMap
 {
     if (!itemImages.empty()) {
         qCInfo(ST_UPDATER).noquote().nospace()
-                << "Finished fetching images for items of feed" << m_current.logInfo()
+                << "Finished fetching images for items of feed " << m_current.logInfo()
                 << ": found " << itemImages.size() << " images";
 
         QSqlQuery q{QSqlDatabase::database(HBNST_DBCONNAME)};
@@ -477,7 +482,7 @@ void FeedsUpdateCommand::imagesFetched(const QVariantMap &itemImages, const QMap
     }
 
     printDone();
-    qCInfo(ST_UPDATER) << "Finished updating feed" << m_current.logInfo();
+    qCInfo(ST_UPDATER).noquote() << "Finished updating feed" << m_current.logInfo();
     QMetaObject::invokeMethod(this, "updateFeed");
 }
 
