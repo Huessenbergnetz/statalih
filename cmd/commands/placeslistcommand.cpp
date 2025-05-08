@@ -59,12 +59,19 @@ void PlacesListCommand::exec(QCommandLineParser *parser)
         return;
     }
 
+    const QString outputFormat = parser->value(u"format"_s).toLower();
+
     //% "Querying database"
     printStatus(qtTrId("statalihcmd-status-query-db"));
 
     QSqlQuery q{QSqlDatabase::database(HBNST_DBCONNAME)};
 
-    QString qs = uR"-(SELECT id, name, slug, parent, "administrativeId", coords, link, created, updated FROM places)-"_s;
+    QString qs;
+    if (outputFormat == "json"_L1 || outputFormat == "json-pretty"_L1) {
+        qs = u"SELECT * FROM places"_s;
+    } else {
+        qs = uR"-(SELECT id, name, slug, parent, "administrativeId", coords, link, created, updated FROM places)-"_s;
+    }
 
     QString search = parser->value(u"search"_s);
     if (!search.isEmpty()) {
@@ -98,8 +105,12 @@ void PlacesListCommand::exec(QCommandLineParser *parser)
         return;
     }
 
-    const QString outputFormat = parser->value(u"format"_s).toLower();
     if (outputFormat == "json"_L1 || outputFormat == "json-pretty"_L1) {
+
+        const auto jsonArray = Utils::queryToJsonObjectArray(q);
+        const QJsonDocument json(jsonArray);
+        QTextStream out(stdout, QIODeviceBase::WriteOnly);
+        out << json.toJson(outputFormat == "json"_L1 ? QJsonDocument::Compact : QJsonDocument::Indented);
 
     } else {
         const QStringList headers{
