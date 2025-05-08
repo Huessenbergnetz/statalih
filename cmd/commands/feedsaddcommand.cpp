@@ -279,8 +279,8 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
         return;
     }
 
-    if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO feeds ("placeId", slug, title, description, source, link, etag, "lastBuildDate", "lastFetch", created, data)
-                              VALUES (:placeId, :slug, :title, :description, :source, :link, :etag, :lastBuildDate, :lastFetch, :created, :data)
+    if (Q_UNLIKELY(!q.prepare(uR"-(INSERT INTO feeds ("placeId", slug, title, description, source, link, "lastBuildDate", "lastFetch", created, data)
+                              VALUES (:placeId, :slug, :title, :description, :source, :link, :lastBuildDate, :lastFetch, :created, :data)
                               RETURNING id)-"_s))) {
         printFailed();
         exit(dbError(q));
@@ -297,7 +297,6 @@ void FeedsAddCommand::feedParsed(const Feed &feed)
     q.bindValue(u":description"_s, m_description);
     q.bindValue(u":source"_s, m_feed.source());
     q.bindValue(u":link"_s, m_feed.link());
-    q.bindValue(u":etag"_s, m_etag);
     q.bindValue(u":lastBuildDate"_s, m_feed.lastBuildDate());
     q.bindValue(u":lastFetch"_s, QDateTime::currentDateTimeUtc());
     q.bindValue(u":created"_s, QDateTime::currentDateTimeUtc());

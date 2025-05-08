@@ -25,7 +25,6 @@ void M0002_CreateFeedsTable::up()
                 description TEXT,
                 source VARCHAR(2048),
                 link VARCHAR(255),
-                etag VARCHAR(255),
                 "lastBuildDate" TIMESTAMP,
                 "lastFetch" TIMESTAMP,
                 created TIMESTAMP NOT NULL,
