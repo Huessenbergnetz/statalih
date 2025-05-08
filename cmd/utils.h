@@ -6,6 +6,8 @@
 #ifndef HBNST_UTILS_H
 #define HBNST_UTILS_H
 
+#include <QJsonArray>
+#include <QSqlQuery>
 #include <QString>
 #include <QVariant>
 
@@ -23,6 +25,8 @@ QString humanCoords(float latitude, float longitude);
 inline QString humanCoords(std::pair<float,float> coords) {
     return Utils::humanCoords(coords.first, coords.second);
 }
+
+QJsonArray queryToJsonObjectArray(QSqlQuery &query);
 
 }
 

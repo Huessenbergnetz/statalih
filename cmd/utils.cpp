@@ -5,8 +5,11 @@
 
 #include "utils.h"
 
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QLocale>
 #include <QRegularExpression>
+#include <QSqlRecord>
 
 using namespace Qt::StringLiterals;
 
@@ -100,4 +103,25 @@ QString Utils::humanCoords(float latitude, float longitude)
 {
     QLocale locale;
     return u"N %1 E %2"_s.arg(locale.toString(latitude), locale.toString(longitude));
+}
+
+QJsonArray Utils::queryToJsonObjectArray(QSqlQuery &query)
+{
+    QJsonArray ret;
+    const QSqlRecord record = query.record();
+    const int columns       = record.count();
+    QStringList cols;
+    cols.reserve(columns);
+    for (int i = 0; i < columns; ++i) {
+        cols.append(record.fieldName(i));
+    }
+
+    while (query.next()) {
+        QJsonObject line;
+        for (int i = 0; i < columns; ++i) {
+            line.insert(cols.at(i), QJsonValue::fromVariant(query.value(i)));
+        }
+        ret.append(line);
+    }
+    return ret;
 }
