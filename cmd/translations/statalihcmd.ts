@@ -576,21 +576,6 @@ This command line client helps to manage several aspects of Statalih.</oldsource
         <source>Your query has not returned any result.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message id="statalihcmd-feeds-list-table-header-placeid">
-        <source>Place ID</source>
-        <extracomment>CLI table header</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message id="statalihcmd-feeds-list-table-header-title">
-        <source>Title</source>
-        <extracomment>CLI table header</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message id="statalihcmd-feeds-list-table-header-link">
-        <source>Link</source>
-        <extracomment>CLI table header</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
     <message id="statalihcmd-feeds-list-table-header-lastFetch">
         <source>Last Fetch</source>
         <extracomment>CLI table header</extracomment>
@@ -621,6 +606,60 @@ This command line client helps to manage several aspects of Statalih.</oldsource
     </message>
     <message id="statalihcmd-err-feeds-list-invalid-placeid">
         <source>Invalid place ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-itemlist-feed-desc">
+        <source>Only show items for the feed specified by feed ID. Can not be used together with --place.</source>
+        <oldsource>Only show items for the feed specified by feed ID.</oldsource>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-listitems-summary">
+        <source>List feed items</source>
+        <extracomment>CLI command summary</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-command-feeds-listitems-description">
+        <source>List feed items data from the database.</source>
+        <extracomment>CLI command description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-placeid">
+        <source>Place ID</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-title">
+        <source>Title</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-itemlist-place-desc">
+        <source>Only show items for feeds belonging to the place identified by place ID. Can not be used together with --feed.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-opt-feeds-itemlist-search-desc">
+        <source>Search for text in item title or description.</source>
+        <extracomment>CLI option description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-listitems-feedandplace">
+        <source>Either --place or --feed is supported but not both.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-err-feeds-listitmes-invaid-feedid">
+        <source>Invalid feed ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-feedid">
+        <source>Feed ID</source>
+        <extracomment>CLI table header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="statalihcmd-table-header-pubdate">
+        <source>Publication Date</source>
+        <extracomment>CLI table header</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

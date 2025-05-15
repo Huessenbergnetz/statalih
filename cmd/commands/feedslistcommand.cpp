@@ -161,15 +161,15 @@ void FeedsListCommand::exec(QCommandLineParser *parser)
             qtTrId("statalihcmd-table-header-id"),
             //: CLI table header
             //% "Place ID"
-            qtTrId("statalihcmd-feeds-list-table-header-placeid"),
+            qtTrId("statalihcmd-table-header-placeid"),
             // source string defined in placeslistcommand.cpp
             qtTrId("statalihcmd-table-header-slug"),
             //: CLI table header
             //% "Title"
-            qtTrId("statalihcmd-feeds-list-table-header-title"),
+            qtTrId("statalihcmd-table-header-title"),
             //: CLI table header
             //% "Link"
-            qtTrId("statalihcmd-feeds-list-table-header-link"),
+            qtTrId("statalihcmd-table-header-link"),
             //: CLI table header
             //% "Last Fetch"
             qtTrId("statalihcmd-feeds-list-table-header-lastFetch"),
