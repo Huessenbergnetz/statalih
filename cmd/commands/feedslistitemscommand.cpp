@@ -4,6 +4,7 @@
  */
 
 #include "feedslistitemscommand.h"
+#include "utils.h"
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
@@ -120,7 +121,7 @@ void FeedsListItemsCommand::exec(QCommandLineParser *parser)
 
     QString qs;
     if (outputFormat == "json"_L1 || outputFormat == "json-pretty"_L1) {
-        qs = uR"-(SELECT i.id, i."feedId", p.id AS "placeId", i.guid, i.title, i.description, i.author, i."pubDate", i.link i.data FROM items i JOIN feeds f ON i."feedId" = f.id JOIN places p ON f."placeId" = p.id)-"_s;
+        qs = uR"-(SELECT i.id, i."feedId", p.id AS "placeId", i.guid, i.title, i.description, i.author, i."pubDate", i.link, i.data FROM items i JOIN feeds f ON i."feedId" = f.id JOIN places p ON f."placeId" = p.id)-"_s;
     } else {
         qs = uR"-(SELECT i.id, i."feedId", p.id AS "placeId", i.title, i."pubDate", i.link FROM items i JOIN feeds f ON i."feedId" = f.id JOIN places p ON f."placeId" = p.id)-"_s;
     }
@@ -182,6 +183,11 @@ void FeedsListItemsCommand::exec(QCommandLineParser *parser)
     }
 
     if (outputFormat == "json"_L1 || outputFormat == "json-pretty"_L1) {
+
+        const auto jsonArray = Utils::queryToJsonObjectArray(q);
+        const QJsonDocument json{jsonArray};
+        QTextStream out(stdout, QIODeviceBase::WriteOnly);
+        out << json.toJson(outputFormat == "json"_L1 ? QJsonDocument::Compact : QJsonDocument::Indented);
 
     } else {
         const QStringList headers{
